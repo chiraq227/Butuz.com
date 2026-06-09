@@ -261,6 +261,94 @@ router.get('/conversations', authMiddleware, async (req, res) => {
   }
 });
 
+// GET /api/messages/unread-count — total unread (regular + secret) for badge + toasts
+// IMPORTANT: must be registered BEFORE the /:userId param route, otherwise "unread-count" gets captured as userId and returns 400.
+router.get('/unread-count', authMiddleware, async (req, res) => {
+  const userId = req.user.id;
+  try {
+    const db = getDB();
+    const reg = await db.get(
+      `SELECT COUNT(*) as c FROM messages WHERE recipient_id = ? AND read = 0`,
+      [userId]
+    );
+    const sec = await db.get(
+      `SELECT COUNT(*) as c FROM direct_messages WHERE recipient_id = ? AND read = 0`,
+      [userId]
+    );
+    const count = (reg?.c || 0) + (sec?.c || 0);
+    res.json({ count });
+  } catch (error) {
+    console.error('Unread count error:', error);
+    res.status(500).json({ error: 'Failed to count unread' });
+  }
+});
+
+// GET /api/messages/unread — recent unread messages for toasts (includes sender info)
+// Must be before /:userId too.
+router.get('/unread', authMiddleware, async (req, res) => {
+  const userId = req.user.id;
+  const limit = Math.min(10, Math.max(1, parseInt(req.query.limit) || 5));
+  try {
+    const db = getDB();
+
+    const reg = await db.all(`
+      SELECT 
+        m.id,
+        m.sender_id,
+        m.content as text,
+        m.created_at,
+        'regular' as mode,
+        u.username as sender_username,
+        u.display_name as sender_name,
+        u.avatar as sender_avatar
+      FROM messages m
+      JOIN users u ON u.id = m.sender_id
+      WHERE m.recipient_id = ? AND m.read = 0
+      ORDER BY m.created_at DESC, m.id DESC
+      LIMIT ?
+    `, [userId, limit]);
+
+    const sec = await db.all(`
+      SELECT 
+        dm.id,
+        dm.sender_id,
+        NULL as text,
+        dm.created_at,
+        'secret' as mode,
+        u.username as sender_username,
+        u.display_name as sender_name,
+        u.avatar as sender_avatar
+      FROM direct_messages dm
+      JOIN users u ON u.id = dm.sender_id
+      WHERE dm.recipient_id = ? AND dm.read = 0
+      ORDER BY dm.created_at DESC, dm.id DESC
+      LIMIT ?
+    `, [userId, limit]);
+
+    const all = [...reg, ...sec]
+      .sort((a, b) => (b.created_at || '').localeCompare(a.created_at || ''))
+      .slice(0, limit)
+      .map(r => ({
+        id: r.id,
+        sender_id: r.sender_id,
+        text: r.text || null,
+        mode: r.mode,
+        created_at: r.created_at ? new Date(r.created_at.replace(' ', 'T') + 'Z').toISOString() : null,
+        sender: {
+          id: r.sender_id,
+          username: r.sender_username,
+          display_name: r.sender_name,
+          avatar: r.sender_avatar
+        }
+      }));
+
+    res.json(all);
+  } catch (error) {
+    console.error('Unread messages error:', error);
+    res.status(500).json({ error: 'Failed to load unread messages' });
+  }
+});
+
 // GET /api/messages/:userId — regular message history
 router.get('/:userId', authMiddleware, async (req, res) => {
   const userId = req.user.id;
@@ -453,102 +541,6 @@ router.get('/secret/:userId', authMiddleware, async (req, res) => {
   } catch (error) {
     console.error('Get secret messages error:', error);
     res.status(500).json({ error: 'Failed to load secret messages' });
-  }
-});
-
-// GET /api/messages/unread-count — total unread (regular + secret) for badge
-// Uses the pre-mounted optionalAuthMiddleware on /api/messages (see index.js) + explicit check.
-// This avoids any potential double-middleware quirks on certain deploys/proxies.
-router.get('/unread-count', async (req, res) => {
-  if (!req.user?.id) {
-    return res.status(401).json({ error: 'No token provided' });
-  }
-  const userId = req.user.id;
-  try {
-    const db = getDB();
-    const reg = await db.get(
-      `SELECT COUNT(*) as c FROM messages WHERE recipient_id = ? AND read = 0`,
-      [userId]
-    );
-    const sec = await db.get(
-      `SELECT COUNT(*) as c FROM direct_messages WHERE recipient_id = ? AND read = 0`,
-      [userId]
-    );
-    const count = (reg?.c || 0) + (sec?.c || 0);
-    res.json({ count });
-  } catch (error) {
-    console.error('Unread count error:', error);
-    res.status(500).json({ error: 'Failed to count unread' });
-  }
-});
-
-// GET /api/messages/unread — recent unread messages for toasts (includes sender info)
-// For secret messages we return a flag instead of decrypted text (client can't decrypt here anyway)
-// Uses pre-mounted optionalAuth + explicit user check (consistent with /unread-count).
-router.get('/unread', async (req, res) => {
-  if (!req.user?.id) {
-    return res.status(401).json({ error: 'No token provided' });
-  }
-  const userId = req.user.id;
-  const limit = Math.min(10, Math.max(1, parseInt(req.query.limit) || 5));
-  try {
-    const db = getDB();
-
-    const reg = await db.all(`
-      SELECT 
-        m.id,
-        m.sender_id,
-        m.content as text,
-        m.created_at,
-        'regular' as mode,
-        u.username as sender_username,
-        u.display_name as sender_name,
-        u.avatar as sender_avatar
-      FROM messages m
-      JOIN users u ON u.id = m.sender_id
-      WHERE m.recipient_id = ? AND m.read = 0
-      ORDER BY m.created_at DESC, m.id DESC
-      LIMIT ?
-    `, [userId, limit]);
-
-    const sec = await db.all(`
-      SELECT 
-        dm.id,
-        dm.sender_id,
-        NULL as text,
-        dm.created_at,
-        'secret' as mode,
-        u.username as sender_username,
-        u.display_name as sender_name,
-        u.avatar as sender_avatar
-      FROM direct_messages dm
-      JOIN users u ON u.id = dm.sender_id
-      WHERE dm.recipient_id = ? AND dm.read = 0
-      ORDER BY dm.created_at DESC, dm.id DESC
-      LIMIT ?
-    `, [userId, limit]);
-
-    const all = [...reg, ...sec]
-      .sort((a, b) => (b.created_at || '').localeCompare(a.created_at || ''))
-      .slice(0, limit)
-      .map(r => ({
-        id: r.id,
-        sender_id: r.sender_id,
-        text: r.text || null,
-        mode: r.mode,
-        created_at: r.created_at ? new Date(r.created_at.replace(' ', 'T') + 'Z').toISOString() : null,
-        sender: {
-          id: r.sender_id,
-          username: r.sender_username,
-          display_name: r.sender_name,
-          avatar: r.sender_avatar
-        }
-      }));
-
-    res.json(all);
-  } catch (error) {
-    console.error('Unread messages error:', error);
-    res.status(500).json({ error: 'Failed to load unread messages' });
   }
 });
 
