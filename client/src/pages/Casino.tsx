@@ -1832,9 +1832,9 @@ export default function Casino() {
         </div>
       )}
 
-     {/* Dedicated game views or hub */}
+     {/* Dedicated game views or hub — mobile safe */}
       {currentGame ? (
-        <div className="pb-8">
+        <div className="pb-8 w-full max-w-full overflow-x-hidden">
           {currentGame && !['slots', 'mines', 'blackjack', 'dice', 'roulette', 'coin', 'plinko'].includes(currentGame) && (
             <div className="max-w-md mx-auto text-center py-12">
               <div className="text-7xl mb-4">🚧</div>
@@ -3302,7 +3302,7 @@ export default function Casino() {
         </div>
       ) : (
         /* HUB */
-        <div>
+        <div className="w-full max-w-full overflow-x-hidden">
          {/* Top level tabs: Economy vs Games (games not always on screen) */}
           <div className="flex gap-2 mb-6">
             <button
@@ -3336,7 +3336,7 @@ export default function Casino() {
               </div>
 
              {/* Bigger economy buttons */}
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3 mb-4">
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 mb-4">
                 {[
                   {k:'farm', label:'⛏️ Ферма', icon:'⛏️'},
                   {k:'bank', label:'🏦 Банк', icon:'🏦'},
