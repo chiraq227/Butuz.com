@@ -413,16 +413,19 @@ export default function Casino() {
   // glow, peg pop, slot win highlight, and predictive dotted line.
   const PlinkoBoard = ({ 
     risk, path, landed, dropping, 
-    onComplete 
+    onComplete,
+    maxWidth = 620
   }: {
     risk: 'low' | 'medium' | 'high';
     path: ('L'|'R')[] | null;
     landed: number | null;
     dropping: boolean;
     onComplete?: () => void;
+    maxWidth?: number;
   }) => {
-    // Exact spec proportions, but rendered at a size that fits nicely next to the sidebar (~640px wide)
-    const SCALE = 0.64;   // 1000 * 0.64 = 640
+    // Responsive: scale the entire 1000x700 world to fit the available mobile/desktop width
+    const displayWidth = Math.max(280, Math.min(maxWidth, 620));
+    const SCALE = displayWidth / 1000;
     const WORLD_WIDTH = 1000 * SCALE;
     const WORLD_HEIGHT = 700 * SCALE;
     const centerX = 500 * SCALE;
@@ -1790,7 +1793,7 @@ export default function Casino() {
   );
 
   return (
-    <div className="max-w-6xl mx-auto px-4 py-6">
+    <div className="w-full max-w-6xl mx-auto px-3 sm:px-4 py-5 sm:py-6">
       <BalanceHeader />
 
      {/* Bet selector - only for actual games, not economy pages. Hide for active coin pvp room (bet is locked). */}
@@ -1843,7 +1846,7 @@ export default function Casino() {
 
          {/* MINES — fully restored */}
           {currentGame === 'mines' && (
-            <div className="max-w-[680px] mx-auto">
+            <div className="w-full max-w-[680px] mx-auto">
               {/* Header - short */}
               <div className="text-center mb-2">
                 <div className="text-6xl">💣</div>
@@ -1878,7 +1881,7 @@ export default function Casino() {
                 )}
 
                 {/* Main area: large grid on left + difficulty list on right */}
-                <div className="flex gap-4">
+                <div className="flex flex-col sm:flex-row gap-4">
                   {/* LEFT: Game field (enlarged cells) */}
                   <div className="flex-1 min-w-0">
                     {(minesSession || minesOpened.length > 0 || minesLost) ? (
@@ -2029,7 +2032,7 @@ export default function Casino() {
 
          {/* BLACKJACK - full with Split, Double, dealing animations */}
           {currentGame === 'blackjack' && (
-            <div className="max-w-[780px] mx-auto">
+            <div className="w-full max-w-[680px] mx-auto">
               {/* Header - cleaner */}
               <div className="text-center mb-3">
                 <div className="text-5xl">🃏</div>
@@ -2313,7 +2316,7 @@ export default function Casino() {
 
           {/* ====================== МОНЕТКА — полностью переработанная, интуитивная + анимации + PvP комнаты ====================== */}
           {currentGame === 'coin' && (
-            <div className="max-w-[720px] mx-auto">
+            <div className="w-full max-w-[680px] mx-auto">
               {/* Header */}
               <div className="text-center mb-4">
                 <div className="text-7xl mb-1">🪙</div>
@@ -2784,8 +2787,8 @@ export default function Casino() {
 
          {/* PLINKO — spacious board on the left, all controls cleanly on the right */}
           {currentGame === 'plinko' && isButuz && (
-            <div className="max-w-[1050px] mx-auto">
-              <div className="flex gap-6">
+            <div className="w-full max-w-[980px] mx-auto">
+              <div className="flex flex-col lg:flex-row gap-4 lg:gap-6">
                 {/* LEFT — big beautiful board */}
                 <div className="flex-1 min-w-0">
                   <div className="mb-2 flex items-center gap-2">
@@ -2796,13 +2799,14 @@ export default function Casino() {
                     </div>
                   </div>
 
-                  <div className="relative rounded-3xl border overflow-hidden bg-[#0b111f] shadow-xl" style={{ borderColor: 'var(--border)' }}>
+                  <div className="relative w-full max-w-[620px] mx-auto rounded-3xl border overflow-hidden bg-[#0b111f] shadow-xl" style={{ borderColor: 'var(--border)' }}>
                     <PlinkoBoard
                       risk={plinkoRisk}
                       path={plinkoPath}
                       landed={plinkoLanded}
                       dropping={plinkoDropping}
                       onComplete={handlePlinkoComplete}
+                      maxWidth={620}
                     />
                   </div>
 
@@ -2824,8 +2828,8 @@ export default function Casino() {
                   )}
                 </div>
 
-                {/* RIGHT — all selection + action, clean and compact */}
-                <div className="w-72 shrink-0 pt-1 space-y-4">
+                {/* RIGHT — all selection + action, clean and compact (full width on mobile) */}
+                <div className="w-full lg:w-72 lg:shrink-0 pt-1 space-y-4">
                   {/* Risk */}
                   <div>
                     <div className="text-[10px] font-semibold tracking-widest opacity-50 mb-1.5 px-0.5">РИСК</div>
@@ -3149,21 +3153,22 @@ export default function Casino() {
 
          {/* ROULETTE dedicated UI - bigger wheel left (340px), selector right, larger cell text */}
           {currentGame === 'roulette' && (
-            <div className="max-w-[820px] mx-auto">
+            <div className="w-full max-w-[680px] mx-auto">
               <div className="text-center mb-3">
                 <div className="text-6xl">🎡</div>
                 <div className="text-3xl font-bold">Европейская Рулетка</div>
               </div>
 
-              <div className="flex gap-6 items-start">
-               {/* LEFT: Big wheel */}
-                <div className="flex-shrink-0">
-                  <div className="relative" style={{ width: 340, height: 340 }}>
+              <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 items-center sm:items-start">
+               {/* LEFT: Big wheel - responsive */}
+                <div className="flex-shrink-0 w-full max-w-[280px] sm:max-w-[340px] mx-auto">
+                  <div className="relative w-full aspect-square">
                     <motion.svg
-                      width="340"
-                      height="340"
+                      width="100%"
+                      height="100%"
                       viewBox="0 0 340 340"
                       className="mx-auto drop-shadow-lg"
+                      preserveAspectRatio="xMidYMid meet"
                     >
                       <g transform="translate(170,170)">
                         <circle r="165" fill="#1f2937" stroke="#4b5563" strokeWidth="8" />

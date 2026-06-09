@@ -40,7 +40,7 @@ export default function Settings() {
   };
 
   return (
-    <div className="max-w-2xl mx-auto px-4 py-8">
+    <div className="w-full max-w-2xl mx-auto px-3 sm:px-4 py-5 sm:py-8">
       <div className="mb-8 flex items-center gap-3">
         <SettingsIcon className="w-8 h-8 text-slate-700" />
         <h1 className="text-3xl font-semibold text-slate-900 tracking-tight">Настройки</h1>

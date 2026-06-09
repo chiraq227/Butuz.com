@@ -65,7 +65,7 @@ export default function Bookmarks() {
   };
 
   return (
-    <div className="max-w-2xl mx-auto px-4 py-8">
+    <div className="w-full max-w-2xl mx-auto px-3 sm:px-4 py-5 sm:py-8">
       <div className="mb-8 flex items-center gap-3">
         <Bookmark className="w-8 h-8 text-slate-700" />
         <div>

@@ -80,7 +80,7 @@ export default function Friends() {
   const currentList = activeTab === 'discover' ? filteredUsers : followingList;
 
   return (
-    <div className="max-w-2xl mx-auto px-4 py-8">
+    <div className="w-full max-w-2xl mx-auto px-3 sm:px-4 py-5 sm:py-8">
       <div className="mb-8">
         <div className="flex items-center gap-3 mb-2">
           <Users className="w-8 h-8 text-slate-700" />

@@ -81,7 +81,7 @@ export default function EditProfile() {
   const defaultAvatar = `https://api.dicebear.com/7.x/avataaars/svg?seed=${user?.username}`;
 
   return (
-    <div className="max-w-2xl mx-auto px-4 py-8">
+    <div className="w-full max-w-2xl mx-auto px-3 sm:px-4 py-5 sm:py-8">
       <div className="mb-8 flex items-center gap-3">
         <Link to="/profile" className="text-slate-500 hover:text-slate-700">
           <ArrowLeft className="w-6 h-6" />

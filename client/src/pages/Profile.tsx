@@ -156,7 +156,7 @@ export default function Profile() {
 
   if (loading) {
     return (
-      <div className="max-w-2xl mx-auto px-4 py-10 flex justify-center">
+      <div className="w-full max-w-2xl mx-auto px-3 sm:px-4 py-8 flex justify-center">
         <div className="animate-spin h-8 w-8 border-b-2 border-indigo-600 rounded-full" />
       </div>
     );
@@ -164,7 +164,7 @@ export default function Profile() {
 
   if (error || !profile) {
     return (
-      <div className="max-w-2xl mx-auto px-4 py-10">
+      <div className="w-full max-w-2xl mx-auto px-3 sm:px-4 py-8">
         <div className="bg-white border rounded-2xl p-8 text-center">
           <p className="text-red-600 mb-4">{error || 'Профиль не найден'}</p>
           <Link to="/" className="text-indigo-600 hover:underline">← Вернуться в ленту</Link>
@@ -179,7 +179,7 @@ export default function Profile() {
   });
 
   return (
-    <div className="max-w-2xl mx-auto px-4 py-8">
+    <div className="w-full max-w-2xl mx-auto px-3 sm:px-4 py-5 sm:py-8">
       {/* Profile header */}
       <div className="bg-white border border-slate-200 rounded-3xl p-7 mb-6">
         <div className="flex flex-col sm:flex-row gap-5 items-start sm:items-center">

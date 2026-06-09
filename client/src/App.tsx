@@ -252,14 +252,14 @@ function App() {
             <div className="min-h-screen" style={{ backgroundColor: 'var(--bg)' }}>
             {isAuthenticated && <Navbar />}
 
-            <div className="flex">
+            <div className="flex w-full min-w-0">
               {isAuthenticated && !isMessagesPage && (
                 <div className="sidebar-left hidden lg:block w-64 fixed left-0 top-16 h-[calc(100vh-4rem)] overflow-y-auto border-r border-slate-200 bg-white">
                   <Sidebar />
                 </div>
               )}
 
-              <main className={`flex-1 ${isAuthenticated && !isMessagesPage ? 'lg:ml-64' : ''} pt-16 ${isAuthenticated ? 'pb-16 lg:pb-0' : ''}`}>
+              <main className={`flex-1 min-w-0 ${isAuthenticated && !isMessagesPage ? 'lg:ml-64' : ''} pt-16 ${isAuthenticated ? 'pb-16 lg:pb-0' : ''}`}>
                 <Routes>
                   <Route 
                     path="/" 

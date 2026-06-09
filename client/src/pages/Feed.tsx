@@ -66,7 +66,7 @@ export default function Feed() {
   };
 
   return (
-    <div className="max-w-2xl mx-auto px-4 py-8">
+    <div className="w-full max-w-2xl mx-auto px-3 sm:px-4 py-5 sm:py-8">
       <div className="mb-8">
         <h1 className="text-3xl font-semibold text-slate-900 tracking-tight">Главная лента</h1>
         <p className="text-slate-500 mt-1">Последние публикации от друзей и сообщества</p>
