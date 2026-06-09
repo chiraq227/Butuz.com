@@ -282,6 +282,20 @@ function App() {
   // Global unread count for the sidebar badge (updated by the manager component)
   const [unreadMessageCount, setUnreadMessageCount] = useState(0);
 
+  // Collapsible sidebar (default collapsed / icons-only as requested)
+  const [sidebarCollapsed, setSidebarCollapsed] = useState<boolean>(() => {
+    const saved = localStorage.getItem('sidebar_collapsed');
+    return saved === null ? true : saved === 'true';
+  });
+
+  const toggleSidebar = () => {
+    setSidebarCollapsed((prev) => {
+      const next = !prev;
+      localStorage.setItem('sidebar_collapsed', String(next));
+      return next;
+    });
+  };
+
   // Ref to always have the latest token for background / stale-closure safe calls (refresh, etc.)
   const appTokenRef = useRef<string | null>(null);
 
@@ -382,12 +396,12 @@ function App() {
 
             <div className="flex w-full min-w-0">
               {isAuthenticated && !isMessagesPage && (
-                <div className="sidebar-left hidden lg:block w-64 fixed left-0 top-16 h-[calc(100vh-4rem)] overflow-y-auto border-r border-slate-200 bg-white">
-                  <Sidebar />
+                <div className={`sidebar-left hidden lg:block fixed left-0 top-16 h-[calc(100vh-4rem)] overflow-y-auto border-r border-slate-200 bg-white transition-all ${sidebarCollapsed ? 'w-16' : 'w-64'}`}>
+                  <Sidebar collapsed={sidebarCollapsed} onToggle={toggleSidebar} />
                 </div>
               )}
 
-              <main className={`flex-1 min-w-0 ${isAuthenticated && !isMessagesPage ? 'lg:ml-64' : ''} pt-16 ${isAuthenticated ? 'pb-16 lg:pb-0' : ''}`}>
+              <main className={`flex-1 min-w-0 ${isAuthenticated && !isMessagesPage ? (sidebarCollapsed ? 'lg:ml-16' : 'lg:ml-64') : ''} pt-16 ${isAuthenticated ? 'pb-16 lg:pb-0' : ''}`}>
                 <Routes>
                   <Route 
                     path="/" 

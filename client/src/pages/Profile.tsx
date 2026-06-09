@@ -269,18 +269,6 @@ export default function Profile() {
         </div>
       </div>
 
-      {/* Create post (own profile only) — placed before publications list */}
-      {isOwnProfile && (
-        <CreatePost
-          onPostCreated={(newPost) => {
-            setPosts((prev) => [newPost, ...prev]);
-            if (profile) {
-              setProfile({ ...profile, post_count: (profile.post_count || 0) + 1 });
-            }
-          }}
-        />
-      )}
-
       {/* Бутуз Казино integration */}
       {(profile.casino_level !== undefined || profile.casino_rating !== undefined || profile.casino_vip !== undefined || profile.casino_games_played !== undefined) && (
         <div className="bg-white border border-slate-200 rounded-3xl p-5 mb-6">
@@ -308,6 +296,18 @@ export default function Profile() {
           </div>
 
         </div>
+      )}
+
+      {/* Create post (own profile only) — placed under the casino section */}
+      {isOwnProfile && (
+        <CreatePost
+          onPostCreated={(newPost) => {
+            setPosts((prev) => [newPost, ...prev]);
+            if (profile) {
+              setProfile({ ...profile, post_count: (profile.post_count || 0) + 1 });
+            }
+          }}
+        />
       )}
 
       {/* Posts */}
