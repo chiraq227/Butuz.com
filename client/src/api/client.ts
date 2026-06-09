@@ -14,6 +14,13 @@ async function request<T>(endpoint: string, options: RequestOptions = {}): Promi
 
   if (token) {
     (headers as Record<string, string>)['Authorization'] = `Bearer ${token}`;
+  } else {
+    // Fallback for background polling (MessageNotificationManager) and any calls that
+    // might run before context is fully propagated. Prefer explicit token, fall back to LS.
+    const stored = localStorage.getItem('butuz_token');
+    if (stored) {
+      (headers as Record<string, string>)['Authorization'] = `Bearer ${stored}`;
+    }
   }
 
   let response: Response;

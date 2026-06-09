@@ -280,6 +280,9 @@ function App() {
   // Global unread count for the sidebar badge (updated by the manager component)
   const [unreadMessageCount, setUnreadMessageCount] = useState(0);
 
+  // Ref to always have the latest token for background / stale-closure safe calls (refresh, etc.)
+  const appTokenRef = useRef<string | null>(null);
+
   // Restore auth from localStorage on app start (this must run to exit loading state)
   useEffect(() => {
     const savedToken = localStorage.getItem('butuz_token');
@@ -289,6 +292,7 @@ function App() {
       const parsedUser = JSON.parse(savedUser);
       setToken(savedToken);
       setUser(parsedUser);
+      appTokenRef.current = savedToken;
       // Immediate count fetch so badge is correct right on load (manager will keep it live)
       (async () => {
         try {
@@ -300,10 +304,16 @@ function App() {
     setLoading(false);
   }, []);
 
+  // Keep appTokenRef in sync whenever the token state changes
+  useEffect(() => {
+    appTokenRef.current = token;
+  }, [token]);
+
   async function refreshUnreadMessageCount() {
-    if (!token) return;
+    const t = appTokenRef.current || token;
+    if (!t) return;
     try {
-      const res = await api.getUnreadMessageCount(token);
+      const res = await api.getUnreadMessageCount(t);
       const newCount = res?.count ?? 0;
       setUnreadMessageCount(newCount);
     } catch {
@@ -316,6 +326,7 @@ function App() {
     localStorage.setItem('butuz_user', JSON.stringify(newUser));
     setToken(newToken);
     setUser(newUser);
+    appTokenRef.current = newToken;
     // Immediate fetch so badge shows correct unread right after login
     (async () => {
       try {
@@ -332,6 +343,7 @@ function App() {
     localStorage.removeItem('butuz_user');
     setToken(null);
     setUser(null);
+    appTokenRef.current = null;
     setUnreadMessageCount(0);
   };
 
