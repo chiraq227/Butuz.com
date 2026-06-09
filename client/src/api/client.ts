@@ -5,19 +5,21 @@ interface RequestOptions extends RequestInit {
 }
 
 async function request<T>(endpoint: string, options: RequestOptions = {}): Promise<T> {
+  const { token, ...fetchOptions } = options;
+
   const headers: HeadersInit = {
     'Content-Type': 'application/json',
-    ...options.headers,
+    ...fetchOptions.headers,
   };
 
-  if (options.token) {
-    (headers as Record<string, string>)['Authorization'] = `Bearer ${options.token}`;
+  if (token) {
+    (headers as Record<string, string>)['Authorization'] = `Bearer ${token}`;
   }
 
   let response: Response;
   try {
     response = await fetch(`${API_BASE}${endpoint}`, {
-      ...options,
+      ...fetchOptions,
       headers,
     });
   } catch (networkErr: any) {
@@ -56,20 +58,22 @@ async function request<T>(endpoint: string, options: RequestOptions = {}): Promi
     const message = data?.error || data?.message || `Request failed with status ${response.status}`;
     const full = data?._raw ? `${message} | Server said: ${data._raw}` : message;
 
-    // Auto-recover from stale/invalid tokens (e.g. after server restart during dev before the fix,
-    // or real 7d expiration). Clear local auth and send user to login so they don't get stuck
-    // seeing "invalid or expired token" on every action.
-    if (response.status === 401 && /invalid or expired token/i.test(message)) {
-      try {
-        localStorage.removeItem('butuz_token');
-        localStorage.removeItem('butuz_user');
-      } catch {}
-      // Navigate to login (full navigation ensures React auth state resets cleanly)
-      setTimeout(() => {
-        if (window.location.pathname !== '/login') {
-          window.location.href = '/login';
-        }
-      }, 30);
+    // Auto-recover from stale/invalid tokens.
+    if (response.status === 401) {
+      const isInvalidToken = /invalid or expired token/i.test(message);
+      const isNoToken = /no token provided/i.test(message);
+
+      if (isInvalidToken || isNoToken) {
+        try {
+          localStorage.removeItem('butuz_token');
+          localStorage.removeItem('butuz_user');
+        } catch {}
+        setTimeout(() => {
+          if (window.location.pathname !== '/login') {
+            window.location.href = '/login';
+          }
+        }, 30);
+      }
     }
 
     throw new Error(full);

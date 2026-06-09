@@ -31,9 +31,13 @@ const LoadingFallback = () => (
 // Hoisted here (before App) so the reference in App's JSX is clearly resolved,
 // and to keep it stable across HMR re-renders of App.
 function MessageNotificationManager({ setUnreadCount }: { setUnreadCount: (n: number) => void }) {
-  const { token } = useAuth();
+  const { token: authToken } = useAuth();
   const navigate = useNavigate();
   const loc = useLocation();
+
+  // Use a ref so the polling closure always sees the latest token (avoids stale token after login/logout)
+  const tokenRef = useRef<string | null>(null);
+  tokenRef.current = authToken || null;
 
   type MessageToast = {
     id: string;
@@ -84,7 +88,8 @@ function MessageNotificationManager({ setUnreadCount }: { setUnreadCount: (n: nu
   }
 
   useEffect(() => {
-    if (!token) {
+    const currentToken = tokenRef.current;
+    if (!currentToken) {
       setMessageToasts([]);
       prevUnreadRef.current = 0;
       seenMessageIdsRef.current = new Set();
@@ -97,9 +102,10 @@ function MessageNotificationManager({ setUnreadCount }: { setUnreadCount: (n: nu
     let cancelled = false;
 
     const poll = async () => {
-      if (cancelled) return;
+      const t = tokenRef.current;
+      if (cancelled || !t) return;
       try {
-        const countRes = await api.getUnreadMessageCount(token);
+        const countRes = await api.getUnreadMessageCount(t);
         const newCount = countRes?.count ?? 0;
 
         if (!initializedRef.current) {
@@ -107,7 +113,7 @@ function MessageNotificationManager({ setUnreadCount }: { setUnreadCount: (n: nu
           // This prevents spamming toasts for old unread messages on startup.
           // Badge will still correctly show the current number.
           try {
-            const currentUnread = await api.getUnreadMessages(token);
+            const currentUnread = await api.getUnreadMessages(t);
             (currentUnread || []).forEach((m: any) => {
               const key = `${m.mode}:${m.id}`;
               seenMessageIdsRef.current.add(key);
@@ -123,7 +129,7 @@ function MessageNotificationManager({ setUnreadCount }: { setUnreadCount: (n: nu
         const countIncreased = newCount > prevUnreadRef.current;
 
         if (countIncreased) {
-          const unreadList = await api.getUnreadMessages(token);
+          const unreadList = await api.getUnreadMessages(t);
 
           const newToasts: MessageToast[] = [];
 
@@ -164,7 +170,7 @@ function MessageNotificationManager({ setUnreadCount }: { setUnreadCount: (n: nu
         prevUnreadRef.current = newCount;
         if (!cancelled) setUnreadCount(newCount);
       } catch {
-        // silent (network / auth transient issues)
+        // silent (network / auth transient issues). Browser will still log the failing request.
       }
     };
 
@@ -181,7 +187,7 @@ function MessageNotificationManager({ setUnreadCount }: { setUnreadCount: (n: nu
       clearInterval(interval);
       document.removeEventListener('visibilitychange', onVisibility);
     };
-  }, [token]);
+  }, [authToken]);
 
   function dismiss(toastId: string) {
     setMessageToasts((prev) => prev.filter((t) => t.id !== toastId));

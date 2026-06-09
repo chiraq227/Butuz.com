@@ -94,9 +94,27 @@ app.use(cors({
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
 
-// Security headers (always, relaxed for SPA in dev)
+// Security headers
+// In production we use a custom (not the ultra-strict default) CSP because the app
+// uses external avatar placeholders (dicebear), uploaded images under /uploads, etc.
 app.use(helmet({
-  contentSecurityPolicy: isProd ? undefined : false, // enable strict CSP in prod if you can
+  contentSecurityPolicy: isProd
+    ? {
+        directives: {
+          defaultSrc: ["'self'"],
+          baseUri: ["'self'"],
+          fontSrc: ["'self'", 'https:', 'data:'],
+          formAction: ["'self'"],
+          frameAncestors: ["'self'"],
+          imgSrc: ["'self'", 'data:', 'https:', 'https://api.dicebear.com'],
+          objectSrc: ["'none'"],
+          scriptSrc: ["'self'"],
+          scriptSrcAttr: ["'none'"],
+          styleSrc: ["'self'", 'https:', "'unsafe-inline'"],
+          upgradeInsecureRequests: [],
+        },
+      }
+    : false,
   crossOriginEmbedderPolicy: false,
 }));
 
