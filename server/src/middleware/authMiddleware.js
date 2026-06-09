@@ -1,7 +1,8 @@
 import jwt from 'jsonwebtoken';
 
 export function authMiddleware(req, res, next) {
-  const authHeader = req.headers.authorization;
+  // Use req.get() which is case-insensitive and more reliable across proxies (Cloudflare, Render, etc.)
+  const authHeader = req.get('Authorization') || req.headers.authorization;
 
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
     return res.status(401).json({ error: 'No token provided' });
@@ -25,7 +26,7 @@ export function authMiddleware(req, res, next) {
  * Useful for public endpoints that want to personalize (likes, is_following, etc.).
  */
 export function optionalAuthMiddleware(req, res, next) {
-  const authHeader = req.headers.authorization;
+  const authHeader = req.get('Authorization') || req.headers.authorization;
 
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
     return next();

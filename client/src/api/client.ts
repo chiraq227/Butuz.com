@@ -8,19 +8,25 @@ async function request<T>(endpoint: string, options: RequestOptions = {}): Promi
   const { token, ...fetchOptions } = options;
 
   const headers: HeadersInit = {
-    'Content-Type': 'application/json',
     ...fetchOptions.headers,
   };
 
-  if (token) {
-    (headers as Record<string, string>)['Authorization'] = `Bearer ${token}`;
-  } else {
-    // Fallback for background polling (MessageNotificationManager) and any calls that
-    // might run before context is fully propagated. Prefer explicit token, fall back to LS.
-    const stored = localStorage.getItem('butuz_token');
-    if (stored) {
-      (headers as Record<string, string>)['Authorization'] = `Bearer ${stored}`;
-    }
+  // Only set Content-Type for requests that typically have a body.
+  // Sending it on GET can cause 400 Bad Request on some proxies/servers (e.g. Render + strict parsers).
+  const method = (fetchOptions.method || 'GET').toUpperCase();
+  const hasBody = !!fetchOptions.body;
+  if (hasBody || !['GET', 'HEAD'].includes(method)) {
+    (headers as Record<string, string>)['Content-Type'] = 'application/json';
+  }
+
+  let authToken = token;
+  if (!authToken) {
+    // Fallback for background polling (MessageNotificationManager etc.)
+    // when context might not have propagated the token yet.
+    authToken = localStorage.getItem('butuz_token') || undefined;
+  }
+  if (authToken) {
+    (headers as Record<string, string>)['Authorization'] = `Bearer ${authToken}`;
   }
 
   let response: Response;
