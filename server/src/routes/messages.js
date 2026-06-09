@@ -457,7 +457,12 @@ router.get('/secret/:userId', authMiddleware, async (req, res) => {
 });
 
 // GET /api/messages/unread-count — total unread (regular + secret) for badge
-router.get('/unread-count', authMiddleware, async (req, res) => {
+// Uses the pre-mounted optionalAuthMiddleware on /api/messages (see index.js) + explicit check.
+// This avoids any potential double-middleware quirks on certain deploys/proxies.
+router.get('/unread-count', async (req, res) => {
+  if (!req.user?.id) {
+    return res.status(401).json({ error: 'No token provided' });
+  }
   const userId = req.user.id;
   try {
     const db = getDB();
@@ -479,7 +484,11 @@ router.get('/unread-count', authMiddleware, async (req, res) => {
 
 // GET /api/messages/unread — recent unread messages for toasts (includes sender info)
 // For secret messages we return a flag instead of decrypted text (client can't decrypt here anyway)
-router.get('/unread', authMiddleware, async (req, res) => {
+// Uses pre-mounted optionalAuth + explicit user check (consistent with /unread-count).
+router.get('/unread', async (req, res) => {
+  if (!req.user?.id) {
+    return res.status(401).json({ error: 'No token provided' });
+  }
   const userId = req.user.id;
   const limit = Math.min(10, Math.max(1, parseInt(req.query.limit) || 5));
   try {

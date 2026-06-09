@@ -244,6 +244,7 @@ export default function Messages() {
           media_duration: m.media_duration,
         }));
         setDisplayMessages(disp);
+        startRegularPoll(other.id);
       } else {
         if (!keyReady || !myPrivateJwk) {
           await ensureSecretKeys();
@@ -321,6 +322,34 @@ export default function Messages() {
         }
       } catch {}
     }, 5000) as unknown as number;
+  }
+
+  // Live poll for regular (non-secret) chat while open — so incoming messages appear without reload.
+  // Mirrors the secret poll pattern (simple length check against closed-over initial; getMessages also marks read server-side).
+  function startRegularPoll(otherId: number) {
+    if (pollRef.current) window.clearInterval(pollRef.current);
+
+    pollRef.current = window.setInterval(async () => {
+      if (!token || !selectedUser || mode !== 'regular') return;
+      try {
+        const latest = await api.getMessages(otherId, token);
+        if (latest && latest.length > regularMessages.length) {
+          setRegularMessages(latest);
+          const disp: DisplayMsg[] = (latest || []).map((m: any) => ({
+            id: m.id,
+            sender_id: m.sender_id,
+            text: m.content || '',
+            created_at: m.created_at,
+            media_url: m.media_url,
+            media_type: m.media_type,
+            media_duration: m.media_duration,
+          }));
+          setDisplayMessages(disp);
+          // Count will drop (getMessages marks incoming as read); keep badge in sync.
+          refreshUnreadMessageCount?.();
+        }
+      } catch {}
+    }, 4500) as unknown as number;
   }
 
   // ====================== MEDIA ATTACHMENT HELPERS (regular chats) ======================
@@ -693,6 +722,18 @@ export default function Messages() {
       if (pollRef.current) window.clearInterval(pollRef.current);
     };
   }, []);
+
+  // Live background refresh of the conversations list (every ~14s while visible).
+  // This makes new messages from other users appear in the list (and reorder) without page reload or manual action.
+  useEffect(() => {
+    if (!token) return;
+    const iv = setInterval(() => {
+      if (!document.hidden) {
+        loadConversationsForMode(mode).catch(() => {});
+      }
+    }, 14000);
+    return () => clearInterval(iv);
+  }, [token, mode]);
 
   // Support deep linking from notifications / toasts: ?openUser=123&mode=secret
   // Only process once per mount / param change
