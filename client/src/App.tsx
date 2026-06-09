@@ -48,6 +48,7 @@ function MessageNotificationManager({ setUnreadCount }: { setUnreadCount: (n: nu
   const prevUnreadRef = useRef(0);
   const seenMessageIdsRef = useRef<Set<string>>(new Set());
   const autoDismissTimers = useRef<Record<string, number>>({});
+  const initializedRef = useRef(false);
 
   // Keep latest path in a ref so the suppression check doesn't require the effect to restart on every navigation
   const currentPathRef = useRef(loc.pathname);
@@ -57,13 +58,12 @@ function MessageNotificationManager({ setUnreadCount }: { setUnreadCount: (n: nu
   useEffect(() => {
     if (loc.pathname.startsWith('/messages')) {
       setMessageToasts([]);
-      // Also clear any pending auto-dismiss timers
       Object.values(autoDismissTimers.current).forEach(clearTimeout);
       autoDismissTimers.current = {};
     }
   }, [loc.pathname]);
 
-  // Also clear visible toasts when the manager unmounts (logout etc)
+  // Cleanup timers on unmount
   useEffect(() => {
     return () => {
       setMessageToasts([]);
@@ -72,16 +72,7 @@ function MessageNotificationManager({ setUnreadCount }: { setUnreadCount: (n: nu
     };
   }, []);
 
-  // Clear timers on unmount
-  useEffect(() => {
-    return () => {
-      Object.values(autoDismissTimers.current).forEach(clearTimeout);
-      autoDismissTimers.current = {};
-    };
-  }, []);
-
   function scheduleAutoDismiss(toastId: string) {
-    // Clear existing
     if (autoDismissTimers.current[toastId]) {
       clearTimeout(autoDismissTimers.current[toastId]);
     }
@@ -97,6 +88,7 @@ function MessageNotificationManager({ setUnreadCount }: { setUnreadCount: (n: nu
       setMessageToasts([]);
       prevUnreadRef.current = 0;
       seenMessageIdsRef.current = new Set();
+      initializedRef.current = false;
       Object.values(autoDismissTimers.current).forEach(clearTimeout);
       autoDismissTimers.current = {};
       return;
@@ -110,7 +102,27 @@ function MessageNotificationManager({ setUnreadCount }: { setUnreadCount: (n: nu
         const countRes = await api.getUnreadMessageCount(token);
         const newCount = countRes?.count ?? 0;
 
-        if (newCount > prevUnreadRef.current || newCount > 0) {
+        if (!initializedRef.current) {
+          // First poll after app load: seed "seen" with whatever is currently unread.
+          // This prevents spamming toasts for old unread messages on startup.
+          // Badge will still correctly show the current number.
+          try {
+            const currentUnread = await api.getUnreadMessages(token);
+            (currentUnread || []).forEach((m: any) => {
+              const key = `${m.mode}:${m.id}`;
+              seenMessageIdsRef.current.add(key);
+            });
+          } catch {}
+          initializedRef.current = true;
+          prevUnreadRef.current = newCount;
+          if (!cancelled) setUnreadCount(newCount);
+          return;
+        }
+
+        // Only react to *new* arrivals (count increased while app is running)
+        const countIncreased = newCount > prevUnreadRef.current;
+
+        if (countIncreased) {
           const unreadList = await api.getUnreadMessages(token);
 
           const newToasts: MessageToast[] = [];
@@ -143,7 +155,6 @@ function MessageNotificationManager({ setUnreadCount }: { setUnreadCount: (n: nu
             setMessageToasts((prev) => {
               const combined = [...prev, ...newToasts];
               const limited = combined.slice(Math.max(0, combined.length - 3));
-              // Schedule auto dismiss for the new ones
               newToasts.forEach(t => scheduleAutoDismiss(t.id));
               return limited;
             });
@@ -153,12 +164,12 @@ function MessageNotificationManager({ setUnreadCount }: { setUnreadCount: (n: nu
         prevUnreadRef.current = newCount;
         if (!cancelled) setUnreadCount(newCount);
       } catch {
-        // silent
+        // silent (network / auth transient issues)
       }
     };
 
     poll();
-    const interval = setInterval(poll, 16000);
+    const interval = setInterval(poll, 12000); // slightly more frequent for better "live" feel
 
     const onVisibility = () => {
       if (document.visibilityState === 'visible') poll();
@@ -269,8 +280,16 @@ function App() {
     const savedUser = localStorage.getItem('butuz_user');
 
     if (savedToken && savedUser) {
+      const parsedUser = JSON.parse(savedUser);
       setToken(savedToken);
-      setUser(JSON.parse(savedUser));
+      setUser(parsedUser);
+      // Immediate count fetch so badge is correct right on load (manager will keep it live)
+      (async () => {
+        try {
+          const res = await api.getUnreadMessageCount(savedToken);
+          setUnreadMessageCount(res?.count ?? 0);
+        } catch {}
+      })();
     }
     setLoading(false);
   }, []);
@@ -291,7 +310,15 @@ function App() {
     localStorage.setItem('butuz_user', JSON.stringify(newUser));
     setToken(newToken);
     setUser(newUser);
-    setUnreadMessageCount(0);
+    // Immediate fetch so badge shows correct unread right after login
+    (async () => {
+      try {
+        const res = await api.getUnreadMessageCount(newToken);
+        setUnreadMessageCount(res?.count ?? 0);
+      } catch {
+        setUnreadMessageCount(0);
+      }
+    })();
   };
 
   const logout = () => {
