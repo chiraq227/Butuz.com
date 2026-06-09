@@ -206,12 +206,18 @@ if (isProd) {
 
 // Error handler
 app.use((err, req, res, next) => {
-  console.error('Request error:', err.message);
+  console.error('Request error:', err.message, err.stack?.split('\n')[1] || '');
   if (err.code === 'LIMIT_FILE_SIZE') {
     return res.status(400).json({ error: 'File too large (max 25MB for posts, 15MB for messages, 5MB for avatars).' });
   }
-  // In production do not leak internal details
-  res.status(500).json({ error: isProd ? 'Internal server error' : (err.message || 'Something went wrong') });
+  // Multer / upload validation errors (fileFilter etc) -> proper 4xx
+  const msg = (err.message || '').toLowerCase();
+  if (err.name === 'MulterError' || msg.includes('only image') || msg.includes('file type') || msg.includes('upload')) {
+    return res.status(400).json({ error: err.message || 'Upload error' });
+  }
+  // In production do not leak internal details for unexpected errors
+  const safeMessage = isProd ? 'Internal server error' : (err.message || 'Something went wrong');
+  res.status(500).json({ error: safeMessage });
 });
 
 // Start server

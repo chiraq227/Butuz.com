@@ -104,10 +104,13 @@ router.post('/', authMiddleware, upload.single('image'), async (req, res) => {
   const { content } = req.body;
   const userId = req.user.id;
 
-  if (!content || content.trim().length === 0) {
-    return res.status(400).json({ error: 'Post content is required' });
+  const hasText = content && content.trim().length > 0;
+  const hasMedia = !!req.file;
+
+  if (!hasText && !hasMedia) {
+    return res.status(400).json({ error: 'Post must have text or an attached photo/video' });
   }
-  if (content.trim().length > 1250) {
+  if (hasText && content.trim().length > 1250) {
     return res.status(400).json({ error: 'Post content is too long (maximum 1250 characters)' });
   }
 

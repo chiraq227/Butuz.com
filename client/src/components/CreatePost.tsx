@@ -87,8 +87,10 @@ export default function CreatePost({ onPostCreated }: CreatePostProps) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!content.trim() || !token) return;
-    if (content.trim().length > 1250) {
+    const hasText = content.trim().length > 0;
+    const hasMedia = !!mediaFile;
+    if ((!hasText && !hasMedia) || !token) return;
+    if (hasText && content.trim().length > 1250) {
       alert('Слишком длинный пост. Максимум 1250 символов.');
       return;
     }
@@ -177,7 +179,7 @@ export default function CreatePost({ onPostCreated }: CreatePostProps) {
                 <span className="text-xs text-slate-400">{content.length}/1250</span>
                 <button
                   type="submit"
-                  disabled={!content.trim() || isSubmitting}
+                  disabled={(!content.trim() && !mediaFile) || isSubmitting}
                   className="btn-primary flex items-center gap-2 px-5 py-2 text-white text-sm font-semibold rounded-full disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <Send className="w-4 h-4" />

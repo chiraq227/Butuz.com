@@ -328,21 +328,28 @@ router.put('/me', authMiddleware, uploadAvatar, async (req, res) => {
         }
       }
     } else if (req.file) {
-      // Resize and compress with sharp
-      const sharp = (await import('sharp')).default;
-      const resizedFilename = `avatar-${Date.now()}-${Math.round(Math.random() * 1e9)}.webp`;
-      const resizedPath = path.join(uploadsDir, resizedFilename);
+      // Resize and compress with sharp (robust: fallback to original on any processing error)
+      let usedProcessed = false;
+      try {
+        const sharp = (await import('sharp')).default;
+        const resizedFilename = `avatar-${Date.now()}-${Math.round(Math.random() * 1e9)}.webp`;
+        const resizedPath = path.join(uploadsDir, resizedFilename);
 
-      await sharp(req.file.path)
-        .resize(256, 256, { fit: 'cover', position: 'center' })
-        .webp({ quality: 80 })
-        .toFile(resizedPath);
+        await sharp(req.file.path)
+          .resize(256, 256, { fit: 'cover', position: 'center' })
+          .webp({ quality: 80 })
+          .toFile(resizedPath);
 
-      fs.unlinkSync(req.file.path); // remove original uploaded file
+        fs.unlinkSync(req.file.path);
+        finalAvatar = `/uploads/${resizedFilename}`;
+        usedProcessed = true;
+      } catch (sharpErr) {
+        console.warn('Sharp avatar optimize failed, using original upload:', sharpErr?.message || sharpErr);
+        // Fallback: keep the file multer already saved (use its basename)
+        finalAvatar = `/uploads/${path.basename(req.file.path)}`;
+      }
 
-      finalAvatar = `/uploads/${resizedFilename}`;
-
-      // Auto delete previous local avatar
+      // Auto delete previous local avatar (only if we actually changed it)
       if (oldAvatar && !oldAvatar.startsWith('http')) {
         try {
           const oldPath = path.resolve(uploadsDir, path.basename(oldAvatar));
