@@ -5,6 +5,7 @@ import fs from 'fs';
 import { fileURLToPath } from 'url';
 import { getDB } from '../db.js';
 import { authMiddleware, optionalAuthMiddleware } from '../middleware/authMiddleware.js';
+import { uploadToCloudinary, deleteFromCloudinary, getPublicIdFromUrl } from '../lib/cloudinary.js';
 
 // Helper to build casino info for social profiles.
 // If hide_balance and not viewing own profile, balances are omitted.
@@ -64,13 +65,14 @@ const upload = multer({
   storage,
   limits: { fileSize: 5 * 1024 * 1024 }, // 5MB
   fileFilter: (req, file, cb) => {
-    const allowedTypes = /jpeg|jpg|png|gif|webp/;
-    const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase());
-    const mimetype = allowedTypes.test(file.mimetype);
-    if (extname && mimetype) {
+    // Support modern image formats (HEIC from iPhone, AVIF, etc.)
+    const allowedExt = /\.(jpe?g|png|gif|webp|heic|heif|avif|bmp|tiff)$/i;
+    const extname = allowedExt.test(path.extname(file.originalname || ''));
+    const mimetype = /^image\//.test(file.mimetype || '');
+    if (extname || mimetype) {
       cb(null, true);
     } else {
-      cb(new Error('Only image files are allowed'));
+      cb(new Error('Разрешены только файлы изображений (jpg, png, webp, heic, avif и др.)'));
     }
   }
 });
@@ -326,10 +328,18 @@ router.put('/me', authMiddleware, uploadAvatar, async (req, res) => {
         } catch (e) {
           console.error('Failed to delete old avatar file on remove', e);
         }
+      } else if (oldAvatar && oldAvatar.includes('cloudinary.com')) {
+        const pubId = getPublicIdFromUrl(oldAvatar);
+        if (pubId) {
+          await deleteFromCloudinary(pubId, 'image');
+        }
       }
     } else if (req.file) {
-      // Resize and compress with sharp (robust: fallback to original on any processing error)
-      let usedProcessed = false;
+      // Resize locally then upload to Cloudinary (or fallback to local path if Cloudinary fails)
+      // We keep the final file (resized or original) until we know it's safely uploaded to Cloudinary
+      let fileToUse = req.file.path;
+      let cloudResult = null;
+
       try {
         const sharp = (await import('sharp')).default;
         const resizedFilename = `avatar-${Date.now()}-${Math.round(Math.random() * 1e9)}.webp`;
@@ -340,22 +350,35 @@ router.put('/me', authMiddleware, uploadAvatar, async (req, res) => {
           .webp({ quality: 80 })
           .toFile(resizedPath);
 
-        fs.unlinkSync(req.file.path);
-        finalAvatar = `/uploads/${resizedFilename}`;
-        usedProcessed = true;
-      } catch (sharpErr) {
-        console.warn('Sharp avatar optimize failed, using original upload:', sharpErr?.message || sharpErr);
-        // Fallback: keep the file multer already saved (use its basename)
-        finalAvatar = `/uploads/${path.basename(req.file.path)}`;
+        // original multer file no longer needed
+        try { fs.unlinkSync(req.file.path); } catch (_) {}
+        fileToUse = resizedPath;
+
+        // Upload to Cloudinary (the helper will unlink the resizedPath on success)
+        cloudResult = await uploadToCloudinary(resizedPath, {
+          folder: 'butuz/avatars',
+          resource_type: 'image',
+        });
+        finalAvatar = cloudResult.url;
+      } catch (err) {
+        console.warn('Avatar processing or Cloudinary upload failed, falling back to local storage:', err?.message || err);
+        // Fallback: keep the fileToUse (resized if sharp succeeded, or original if sharp failed)
+        // Do NOT unlink it here — it stays in uploads/ for local serving
+        finalAvatar = `/uploads/${path.basename(fileToUse)}`;
       }
 
-      // Auto delete previous local avatar (only if we actually changed it)
+      // Delete previous avatar (local or Cloudinary)
       if (oldAvatar && !oldAvatar.startsWith('http')) {
         try {
           const oldPath = path.resolve(uploadsDir, path.basename(oldAvatar));
           if (fs.existsSync(oldPath)) fs.unlinkSync(oldPath);
         } catch (e) {
-          console.error('Failed to delete old avatar file on replace', e);
+          console.error('Failed to delete old local avatar file', e);
+        }
+      } else if (oldAvatar && oldAvatar.includes('cloudinary.com')) {
+        const pubId = getPublicIdFromUrl(oldAvatar);
+        if (pubId) {
+          await deleteFromCloudinary(pubId, 'image');
         }
       }
     }

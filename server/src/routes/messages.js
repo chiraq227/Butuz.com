@@ -6,6 +6,7 @@ import crypto from 'crypto';
 import { fileURLToPath } from 'url';
 import { getDB } from '../db.js';
 import { authMiddleware } from '../middleware/authMiddleware.js';
+import { uploadToCloudinary, deleteFromCloudinary, getPublicIdFromUrl } from '../lib/cloudinary.js';
 
 const router = express.Router();
 
@@ -33,14 +34,14 @@ const mediaUpload = multer({
   storage: mediaStorage,
   limits: { fileSize: 15 * 1024 * 1024 }, // 15MB — reasonable for chat voice/video
   fileFilter: (req, file, cb) => {
-    const allowed = /jpeg|jpg|png|gif|webp|mp4|webm|mov|mpeg|mp3|wav|ogg|oga/;
+    const allowed = /jpeg|jpg|png|gif|webp|heic|heif|avif|mp4|webm|mov|mpeg|mp3|wav|ogg|oga/;
     const originalName = file.originalname || '';
     const ext = allowed.test(path.extname(originalName).toLowerCase());
     const mime = allowed.test(file.mimetype || '');
     if (ext || mime) {
       cb(null, true);
     } else {
-      cb(new Error('Unsupported media type for messages (images, video, audio only)'));
+      cb(new Error('Неподдерживаемый тип файла (только изображения, видео и аудио)'));
     }
   }
 });
@@ -120,7 +121,6 @@ router.post('/', authMiddleware, mediaUpload.single('media'), async (req, res) =
 
     if (hasMedia && req.file) {
       const uploadedFull = req.file.path;
-      mediaPath = path.basename(uploadedFull); // IMPORTANT: store only basename, never full FS path (deploy safe)
 
       const mime = req.file.mimetype || '';
       const ext = path.extname(req.file.originalname || '').toLowerCase();
@@ -134,6 +134,20 @@ router.post('/', authMiddleware, mediaUpload.single('media'), async (req, res) =
         mediaDuration = clientDuration || null; // client should send duration for voice
       } else {
         mediaType = 'file'; // fallback
+      }
+
+      // Upload to Cloudinary
+      try {
+        const folder = mediaType === 'image' ? 'butuz/messages/images' : mediaType === 'video' ? 'butuz/messages/videos' : 'butuz/messages/audio';
+        const resourceType = mediaType === 'image' ? 'image' : 'video'; // voice as video resource in cloudinary
+        const cloudResult = await uploadToCloudinary(uploadedFull, {
+          folder,
+          resource_type: resourceType,
+        });
+        mediaPath = cloudResult.url; // full cloudinary url
+      } catch (cloudErr) {
+        console.warn('Cloudinary message media upload failed, using local fallback:', cloudErr.message);
+        mediaPath = path.basename(uploadedFull);
       }
     }
 
@@ -153,7 +167,7 @@ router.post('/', authMiddleware, mediaUpload.single('media'), async (req, res) =
     }
 
     const mediaUrl = created.media_path
-      ? `/uploads/${path.basename(created.media_path)}`
+      ? (created.media_path.startsWith('http') ? created.media_path : `/uploads/${path.basename(created.media_path)}`)
       : null;
 
     res.status(201).json({

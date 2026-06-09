@@ -6,6 +6,7 @@ import crypto from 'crypto';
 import { fileURLToPath } from 'url';
 import { getDB } from '../db.js';
 import { authMiddleware, optionalAuthMiddleware } from '../middleware/authMiddleware.js';
+import { uploadToCloudinary, deleteFromCloudinary, getPublicIdFromUrl } from '../lib/cloudinary.js';
 
 const router = express.Router();
 
@@ -36,13 +37,14 @@ const upload = multer({
   storage,
   limits: { fileSize: 25 * 1024 * 1024 }, // 25MB (images ~5-8MB, videos up to ~25MB)
   fileFilter: (req, file, cb) => {
-    const allowedTypes = /jpeg|jpg|png|gif|webp|mp4|webm|mov|avi/;
-    const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase());
+    // Support modern formats including HEIC (iPhone), AVIF etc.
+    const allowedTypes = /jpeg|jpg|png|gif|webp|heic|heif|avif|mp4|webm|mov|avi/;
+    const extname = allowedTypes.test(path.extname(file.originalname || '').toLowerCase());
     const mimetype = allowedTypes.test(file.mimetype || '');
     if (extname || mimetype) {
       cb(null, true);
     } else {
-      cb(new Error('Only image and video files are allowed'));
+      cb(new Error('Разрешены только изображения и видео'));
     }
   }
 });
@@ -77,7 +79,9 @@ router.get('/', optionalAuthMiddleware, async (req, res) => {
     const formatted = posts.map(post => ({
       id: post.id,
       content: post.content,
-      image: post.image ? `/uploads/${path.basename(post.image)}` : null,
+      image: post.image
+        ? (post.image.startsWith('http') ? post.image : `/uploads/${path.basename(post.image)}`)
+        : null,
       created_at: post.created_at ? new Date(post.created_at.replace(' ', 'T') + 'Z').toISOString() : null,
       is_pinned: !!post.is_pinned,
       user: {
@@ -123,8 +127,11 @@ router.post('/', authMiddleware, upload.single('image'), async (req, res) => {
       const originalName = req.file.originalname || '';
       const isImage = /\.(jpe?g|png|gif|webp)$/i.test(originalName) || (req.file.mimetype || '').startsWith('image/');
 
+      let localToUpload = uploadedFull;
+      let processedLocal = null;
+
       if (isImage) {
-        // Optimize post image: resize + convert to webp (saves bandwidth + mobile perf)
+        // Optimize post image locally first
         try {
           const sharp = (await import('sharp')).default;
           const processedFilename = `post-${Date.now()}-${Math.round(Math.random() * 1e9)}.webp`;
@@ -135,16 +142,25 @@ router.post('/', authMiddleware, upload.single('image'), async (req, res) => {
             .webp({ quality: 82 })
             .toFile(processedPath);
 
-          // remove original large upload
           try { fs.unlinkSync(uploadedFull); } catch (_) {}
-          imagePath = processedFilename; // store ONLY basename (cross-platform safe)
+          localToUpload = processedPath;
+          processedLocal = processedPath;
         } catch (sharpErr) {
-          console.warn('Sharp post image optimize failed, using original:', sharpErr.message);
-          imagePath = path.basename(uploadedFull);
+          console.warn('Sharp post image optimize failed, uploading original to Cloudinary:', sharpErr.message);
         }
-      } else {
-        // video or other - store as-is (basename only!)
-        imagePath = path.basename(uploadedFull);
+      }
+
+      // Upload to Cloudinary (images and videos)
+      try {
+        const cloudResult = await uploadToCloudinary(localToUpload, {
+          folder: isImage ? 'butuz/posts/images' : 'butuz/posts/videos',
+          resource_type: isImage ? 'image' : 'video',
+        });
+        imagePath = cloudResult.url; // store full cloudinary secure_url
+      } catch (cloudErr) {
+        console.warn('Cloudinary upload failed for post media, falling back to local storage:', cloudErr.message);
+        // Fallback: store basename for local /uploads serving
+        imagePath = path.basename(localToUpload || uploadedFull);
       }
     }
 
@@ -169,10 +185,14 @@ router.post('/', authMiddleware, upload.single('image'), async (req, res) => {
       WHERE p.id = ?
     `, [result.lastID]);
 
+    const postImage = newPost.image
+      ? (newPost.image.startsWith('http') ? newPost.image : `/uploads/${path.basename(newPost.image)}`)
+      : null;
+
     res.status(201).json({
       id: newPost.id,
       content: newPost.content,
-      image: newPost.image ? `/uploads/${path.basename(newPost.image)}` : null,
+      image: postImage,
       created_at: newPost.created_at ? new Date(newPost.created_at.replace(' ', 'T') + 'Z').toISOString() : null,
       user: {
         id: newPost.user_id,
@@ -246,12 +266,20 @@ router.delete('/:id', authMiddleware, async (req, res) => {
       return res.status(403).json({ error: 'You can only delete your own posts' });
     }
 
-    // Delete image/video file if exists (robust: always resolve from uploadsDir + basename)
+    // Delete media: Cloudinary or local
     if (post.image) {
-      const fname = path.basename(post.image);
-      const full = path.join(uploadsDir, fname);
-      if (fs.existsSync(full)) {
-        try { fs.unlinkSync(full); } catch (e) { console.error('Failed to delete post media', e); }
+      if (post.image.includes('cloudinary.com')) {
+        const pubId = getPublicIdFromUrl(post.image);
+        if (pubId) {
+          const isVideo = post.image.includes('/video/') || /\.(mp4|webm|mov)/i.test(post.image);
+          await deleteFromCloudinary(pubId, isVideo ? 'video' : 'image');
+        }
+      } else {
+        const fname = path.basename(post.image);
+        const full = path.join(uploadsDir, fname);
+        if (fs.existsSync(full)) {
+          try { fs.unlinkSync(full); } catch (e) { console.error('Failed to delete post media', e); }
+        }
       }
     }
 
@@ -366,7 +394,9 @@ router.get('/bookmarks', authMiddleware, async (req, res) => {
     const formatted = posts.map(post => ({
       id: post.id,
       content: post.content,
-      image: post.image ? `/uploads/${path.basename(post.image)}` : null,
+      image: post.image
+        ? (post.image.startsWith('http') ? post.image : `/uploads/${path.basename(post.image)}`)
+        : null,
       created_at: post.created_at ? new Date(post.created_at.replace(' ', 'T') + 'Z').toISOString() : null,
       user: {
         id: post.user_id,
@@ -420,7 +450,9 @@ router.get('/search', optionalAuthMiddleware, async (req, res) => {
     const formatted = posts.map(post => ({
       id: post.id,
       content: post.content,
-      image: post.image ? `/uploads/${path.basename(post.image)}` : null,
+      image: post.image
+        ? (post.image.startsWith('http') ? post.image : `/uploads/${path.basename(post.image)}`)
+        : null,
       created_at: post.created_at ? new Date(post.created_at.replace(' ', 'T') + 'Z').toISOString() : null,
       is_pinned: !!post.is_pinned,
       user: {
