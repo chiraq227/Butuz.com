@@ -1360,7 +1360,7 @@ router.post('/games/roulette/play', authMiddleware, async (req, res) => {
     if (betType === 'red' && isRed) win = bet * 2;
     else if (betType === 'black' && !isRed && result !== 0) win = bet * 2;
     else if (betType === 'zero' && result === 0) win = bet * 35;
-    else if (betType === 'number' && result === (target || 0)) win = bet * 35;
+    else if (betType === 'number' && Number.isInteger(target) && result === target) win = bet * 35;
     else if (betType === 'low' && result >= 1 && result <= 18) win = bet * 2;
     else if (betType === 'high' && result >= 19 && result <= 36) win = bet * 2;
     else if (betType === 'even' && result !== 0 && result % 2 === 0) win = bet * 2;

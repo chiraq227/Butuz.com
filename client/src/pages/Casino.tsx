@@ -125,6 +125,7 @@ export default function Casino() {
   const [rouletteResult, setRouletteResult] = useState<any>(null);
   const [targetWheelRotation, setTargetWheelRotation] = useState(0);
   const [pendingRouletteResult, setPendingRouletteResult] = useState<any>(null);
+  const wheelRotationRef = useRef(0);
 
   // Other panels data
   const [farm, setFarm] = useState<any>(null);
@@ -253,23 +254,34 @@ export default function Casino() {
 
   // Roulette wheel data (European, 37 pockets)
   const ROULETTE_ORDER = [0,32,15,19,4,21,2,25,17,34,6,27,13,36,11,30,8,23,10,5,24,16,33,1,20,14,31,9,22,18,29,7,28,12,35,3,26];
+  const ROULETTE_REDS = [1,3,5,7,9,12,14,16,18,19,21,23,25,27,30,32,34,36];
 
   function getRouletteColor(num: number) {
     if (num === 0) return '#10b981'; // green
-    const reds = [1,3,5,7,9,12,14,16,18,19,21,23,25,27,30,32,34,36];
-    return reds.includes(num) ? '#ef4444' : '#1f2937';
+    return ROULETTE_REDS.includes(num) ? '#ef4444' : '#1f2937';
   }
 
   function calculateRouletteRotation(winningNumber: number) {
     const idx = ROULETTE_ORDER.indexOf(winningNumber);
-    if (idx < 0) return 0;
+    if (idx < 0) return wheelRotationRef.current + 360 * 6;
     const segment = 360 / 37;
     const segmentCenter = idx * segment + segment / 2;
     // Rotate so the center of the winning segment is under the top pointer (0 deg)
     const base = -segmentCenter;
-    // Add several full rotations + slight random for natural feel
-    const spins = 5.5 + Math.random() * 2.5;
-    return base + spins * 360;
+    // Use *integer* full rotations. Fractional spins (e.g. 5.5) shift the final modulo
+    // and cause the wheel to stop on the wrong pocket relative to server result.
+    const prev = wheelRotationRef.current;
+    const extraTurns = 5 + Math.floor(Math.random() * 4); // 5..8 full turns
+    const minTarget = prev + extraTurns * 360;
+    // Lift to the next congruent angle that matches 'base' (so correct pocket lands at top)
+    const modBase = ((base % 360) + 360) % 360;
+    const curMod = ((minTarget % 360) + 360) % 360;
+    const delta = (modBase - curMod + 360) % 360;
+    const final = minTarget + delta;
+    // guarantee a decent spin distance even on unlucky rand
+    const ensured = final < prev + 360 * 5 ? final + 360 * 3 : final;
+    wheelRotationRef.current = ensured;
+    return ensured;
   }
 
   function createPieSlice(cx: number, cy: number, r: number, startDeg: number, endDeg: number) {
@@ -1751,12 +1763,14 @@ export default function Casino() {
                 setRouletteTarget(null);
                 setTargetWheelRotation(0);
                 setPendingRouletteResult(null);
+                wheelRotationRef.current = 0;
                 setRouletteSpinning(false);
                 setRouletteResult(null);
                 setRouletteBetType('red');
                 setRouletteTarget(null);
                 setTargetWheelRotation(0);
                 setPendingRouletteResult(null);
+                wheelRotationRef.current = 0;
                 // Coin resets
                 setCoinMode('solo');
                 setCoinSide('heads');
