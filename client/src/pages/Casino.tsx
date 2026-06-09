@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef, useMemo } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { api } from '../api/client';
-import { Coins, TrendingUp, Users, Gift, Building2, Store, Shield, ArrowLeftRight, Play, Target, Zap } from 'lucide-react';
+import { Coins } from 'lucide-react';
 import { motion, AnimatePresence, useAnimation } from 'framer-motion';
 import AdminPanel from '../components/casino/AdminPanel';
 
@@ -19,6 +19,7 @@ interface CasinoProfile {
   total_btc?: number;
   btc_value?: number;
   hide_balance?: boolean;
+  last_bet?: number;
 }
 
 const CURRENCY = '💎';

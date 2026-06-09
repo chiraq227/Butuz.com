@@ -18,6 +18,7 @@ interface Post {
   like_count: number;
   user_liked: boolean;
   is_bookmarked?: boolean;
+  is_pinned?: boolean;
   comment_count?: number;
 }
 

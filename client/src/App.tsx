@@ -17,7 +17,7 @@ import { FollowProvider } from './contexts/FollowContext';
 import { PhotoViewerProvider } from './components/PhotoViewer';
 import { api } from './api/client';
 import { lazy, Suspense } from 'react';
-import { AuthContext, type AuthContextType, type User, useAuth } from './contexts/AuthContext';
+import { AuthContext, type User, useAuth } from './contexts/AuthContext';
 
 const Casino = lazy(() => import('./pages/Casino'));
 const LoadingFallback = () => (

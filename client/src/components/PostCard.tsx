@@ -21,6 +21,7 @@ interface Post {
   user_liked: boolean;
   is_bookmarked?: boolean;
   comment_count?: number;
+  is_pinned?: boolean;
 }
 
 interface PostCardProps {
