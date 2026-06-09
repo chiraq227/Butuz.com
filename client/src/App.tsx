@@ -12,12 +12,14 @@ import Bookmarks from './pages/Bookmarks';
 import Settings from './pages/Settings';
 import EditProfile from './pages/EditProfile';
 import Messages from './pages/Messages';
+import Avatar from './components/Avatar';
 import { ThemeProvider } from './contexts/ThemeContext';
 import { FollowProvider } from './contexts/FollowContext';
 import { PhotoViewerProvider } from './components/PhotoViewer';
 import { api } from './api/client';
 import { lazy, Suspense } from 'react';
 import { AuthContext, type User, useAuth } from './contexts/AuthContext';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const Casino = lazy(() => import('./pages/Casino'));
 const LoadingFallback = () => (
@@ -36,6 +38,7 @@ function MessageNotificationManager({ setUnreadCount }: { setUnreadCount: (n: nu
   type MessageToast = {
     id: string;
     senderName: string;
+    avatar?: string | null;
     text: string | null;
     otherUserId: number;
     mode: 'regular' | 'secret';
@@ -44,16 +47,58 @@ function MessageNotificationManager({ setUnreadCount }: { setUnreadCount: (n: nu
   const [messageToasts, setMessageToasts] = useState<MessageToast[]>([]);
   const prevUnreadRef = useRef(0);
   const seenMessageIdsRef = useRef<Set<string>>(new Set());
+  const autoDismissTimers = useRef<Record<string, number>>({});
 
   // Keep latest path in a ref so the suppression check doesn't require the effect to restart on every navigation
   const currentPathRef = useRef(loc.pathname);
   currentPathRef.current = loc.pathname;
+
+  // When user opens the messages page, clear any visible incoming toasts
+  useEffect(() => {
+    if (loc.pathname.startsWith('/messages')) {
+      setMessageToasts([]);
+      // Also clear any pending auto-dismiss timers
+      Object.values(autoDismissTimers.current).forEach(clearTimeout);
+      autoDismissTimers.current = {};
+    }
+  }, [loc.pathname]);
+
+  // Also clear visible toasts when the manager unmounts (logout etc)
+  useEffect(() => {
+    return () => {
+      setMessageToasts([]);
+      Object.values(autoDismissTimers.current).forEach(clearTimeout);
+      autoDismissTimers.current = {};
+    };
+  }, []);
+
+  // Clear timers on unmount
+  useEffect(() => {
+    return () => {
+      Object.values(autoDismissTimers.current).forEach(clearTimeout);
+      autoDismissTimers.current = {};
+    };
+  }, []);
+
+  function scheduleAutoDismiss(toastId: string) {
+    // Clear existing
+    if (autoDismissTimers.current[toastId]) {
+      clearTimeout(autoDismissTimers.current[toastId]);
+    }
+    const timer = window.setTimeout(() => {
+      dismiss(toastId);
+      delete autoDismissTimers.current[toastId];
+    }, 8000);
+    autoDismissTimers.current[toastId] = timer;
+  }
 
   useEffect(() => {
     if (!token) {
       setMessageToasts([]);
       prevUnreadRef.current = 0;
       seenMessageIdsRef.current = new Set();
+      Object.values(autoDismissTimers.current).forEach(clearTimeout);
+      autoDismissTimers.current = {};
       return;
     }
 
@@ -86,6 +131,7 @@ function MessageNotificationManager({ setUnreadCount }: { setUnreadCount: (n: nu
             newToasts.push({
               id: key,
               senderName,
+              avatar: m.sender?.avatar || null,
               text,
               otherUserId: m.sender_id,
               mode: m.mode,
@@ -96,7 +142,10 @@ function MessageNotificationManager({ setUnreadCount }: { setUnreadCount: (n: nu
           if (newToasts.length > 0) {
             setMessageToasts((prev) => {
               const combined = [...prev, ...newToasts];
-              return combined.slice(Math.max(0, combined.length - 3));
+              const limited = combined.slice(Math.max(0, combined.length - 3));
+              // Schedule auto dismiss for the new ones
+              newToasts.forEach(t => scheduleAutoDismiss(t.id));
+              return limited;
             });
           }
         }
@@ -109,7 +158,7 @@ function MessageNotificationManager({ setUnreadCount }: { setUnreadCount: (n: nu
     };
 
     poll();
-    const interval = setInterval(poll, 18000);
+    const interval = setInterval(poll, 16000);
 
     const onVisibility = () => {
       if (document.visibilityState === 'visible') poll();
@@ -125,6 +174,10 @@ function MessageNotificationManager({ setUnreadCount }: { setUnreadCount: (n: nu
 
   function dismiss(toastId: string) {
     setMessageToasts((prev) => prev.filter((t) => t.id !== toastId));
+    if (autoDismissTimers.current[toastId]) {
+      clearTimeout(autoDismissTimers.current[toastId]);
+      delete autoDismissTimers.current[toastId];
+    }
   }
 
   function onToastClick(toast: MessageToast) {
@@ -139,35 +192,63 @@ function MessageNotificationManager({ setUnreadCount }: { setUnreadCount: (n: nu
   if (messageToasts.length === 0) return null;
 
   return (
-    <div className="fixed bottom-20 lg:bottom-4 right-4 z-[300] flex flex-col gap-2 items-end pointer-events-none max-w-[calc(100vw-2rem)]">
-      {messageToasts.map((toast) => (
-        <div
-          key={toast.id}
-          onClick={() => onToastClick(toast)}
-          className="pointer-events-auto w-80 max-w-[90vw] bg-white border border-slate-200 shadow-xl rounded-2xl p-3 cursor-pointer hover:shadow-2xl transition flex gap-3"
-          style={{ backgroundColor: 'var(--card, #fff)' }}
-        >
-          <div className="flex-1 min-w-0" onClick={(e) => { e.stopPropagation(); onToastClick(toast); }}>
-            <div className="flex items-center gap-2 mb-0.5">
-              <div className="font-semibold text-sm truncate">{toast.senderName}</div>
-              <div className="text-[10px] px-1.5 py-0 rounded bg-slate-100 text-slate-500">
-                {toast.mode === 'secret' ? '🔒 секретно' : 'сообщение'}
+    <div className="fixed z-[300] pointer-events-none
+      top-3 left-3 right-3 flex flex-col gap-2 items-stretch
+      lg:top-auto lg:bottom-3 lg:right-3 lg:left-auto lg:items-end
+      max-w-[calc(100vw-1.5rem)] lg:max-w-[320px]">
+      <AnimatePresence>
+        {messageToasts.map((toast) => (
+          <motion.div
+            key={toast.id}
+            layout
+            initial={{ opacity: 0, y: -12, scale: 0.96 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, x: 80, scale: 0.95, transition: { duration: 0.15 } }}
+            transition={{ type: 'spring', stiffness: 420, damping: 32, mass: 0.6 }}
+            drag="x"
+            dragConstraints={{ left: -120, right: 120 }}
+            dragElastic={0.2}
+            onDragEnd={(event, info) => {
+              if (Math.abs(info.offset.x) > 70) {
+                dismiss(toast.id);
+              }
+            }}
+            whileDrag={{ scale: 0.985 }}
+            onClick={() => onToastClick(toast)}
+            className="pointer-events-auto w-full lg:w-80 max-w-[92vw] lg:max-w-[320px] bg-white border border-slate-200 shadow-2xl rounded-2xl p-3 cursor-pointer flex gap-3 active:scale-[0.985] transition"
+            style={{ backgroundColor: 'var(--card, #fff)', touchAction: 'pan-y' }}
+          >
+            {/* Avatar */}
+            <div className="flex-shrink-0 mt-0.5" onClick={(e) => { e.stopPropagation(); onToastClick(toast); }}>
+              <Avatar src={toast.avatar} alt={toast.senderName} size="sm" />
+            </div>
+
+            <div className="flex-1 min-w-0" onClick={(e) => { e.stopPropagation(); onToastClick(toast); }}>
+              <div className="flex items-center gap-2 mb-0.5">
+                <div className="font-semibold text-sm truncate">{toast.senderName}</div>
+                <div className="text-[10px] px-1.5 py-0.5 rounded bg-slate-100 text-slate-500 font-medium">
+                  {toast.mode === 'secret' ? '🔒 секретно' : 'сообщение'}
+                </div>
+              </div>
+              <div className="text-sm text-slate-600 line-clamp-2 break-words">
+                {toast.text ? toast.text : 'Новое секретное сообщение'}
+              </div>
+              <div className="text-[10px] text-indigo-600 mt-1 flex items-center gap-1">
+                Нажмите или смахните → открыть чат
               </div>
             </div>
-            <div className="text-sm text-slate-600 line-clamp-2 break-words">
-              {toast.text ? toast.text : 'Новое секретное сообщение'}
-            </div>
-            <div className="text-[10px] text-indigo-600 mt-1">Нажмите, чтобы открыть чат →</div>
-          </div>
-          <button
-            onClick={(e) => { e.stopPropagation(); dismiss(toast.id); }}
-            className="self-start text-slate-400 hover:text-slate-600 text-lg leading-none mt-[-2px] px-1"
-            aria-label="Закрыть"
-          >
-            ×
-          </button>
-        </div>
-      ))}
+
+            {/* Close button (fallback) */}
+            <button
+              onClick={(e) => { e.stopPropagation(); dismiss(toast.id); }}
+              className="self-start text-slate-400 hover:text-slate-600 text-xl leading-none mt-[-4px] px-1 active:opacity-70"
+              aria-label="Закрыть уведомление"
+            >
+              ×
+            </button>
+          </motion.div>
+        ))}
+      </AnimatePresence>
     </div>
   );
 }
