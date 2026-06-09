@@ -774,55 +774,59 @@ export default function Messages() {
   const isSecret = mode === 'secret';
 
   return (
-    <div className="h-[calc(100dvh-4rem)] md:h-[calc(100vh-4rem)] flex flex-col bg-slate-50 messages-page pb-16 md:pb-0">
-      <div className="flex items-center justify-between border-b bg-white px-4 py-3 flex-shrink-0">
-        <div className="flex items-center gap-4">
-          <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-500 flex items-center justify-center">
-              <MessageCircle className="w-5 h-5 text-white" />
+    <div className="h-[calc(100dvh-4rem)] md:h-[calc(100vh-4rem)] flex flex-col bg-slate-50 messages-page pb-16 md:pb-0 w-full overflow-x-hidden">
+      <div className="flex items-center justify-between border-b bg-white px-3 sm:px-4 py-3 flex-shrink-0 overflow-x-hidden">
+        <div className="flex items-center gap-2 sm:gap-4 min-w-0 flex-1">
+          <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
+            <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-500 flex items-center justify-center">
+              <MessageCircle className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
             </div>
-            <div>
-              <div className="font-semibold text-xl tracking-tight">Сообщения</div>
-              <div className="text-xs text-slate-500 -mt-0.5">Бутуз</div>
+            <div className="min-w-0">
+              <div className="font-semibold text-lg sm:text-xl tracking-tight">Сообщения</div>
+              <div className="text-[10px] sm:text-xs text-slate-500 -mt-0.5">Бутуз</div>
             </div>
           </div>
 
-          <div className="flex ml-6 rounded-full border border-slate-200 bg-slate-100 p-0.5 text-sm messages-mode-tabs">
+          <div className="flex ml-1 sm:ml-4 rounded-full border border-slate-200 bg-slate-100 p-0.5 text-xs sm:text-sm messages-mode-tabs flex-shrink-0">
             <button
               onClick={() => switchMode('regular')}
-              className={`messages-mode-tab flex items-center gap-2 px-4 py-1.5 rounded-full transition ${!isSecret ? 'is-active bg-white shadow text-slate-900' : 'text-slate-600 hover:text-slate-800'}`}
+              className={`messages-mode-tab flex items-center gap-1 sm:gap-2 px-2.5 sm:px-4 py-1 sm:py-1.5 rounded-full transition ${!isSecret ? 'is-active bg-white shadow text-slate-900' : 'text-slate-600 hover:text-slate-800'}`}
             >
-              <MessageCircle className="w-4 h-4" />
-              Обычные
+              <MessageCircle className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">Обычные</span>
+              <span className="sm:hidden">Обыч.</span>
             </button>
             <button
               onClick={() => switchMode('secret')}
-              className={`messages-mode-tab flex items-center gap-2 px-4 py-1.5 rounded-full transition ${isSecret ? 'is-active bg-white shadow text-slate-900' : 'text-slate-600 hover:text-slate-800'}`}
+              className={`messages-mode-tab flex items-center gap-1 sm:gap-2 px-2.5 sm:px-4 py-1 sm:py-1.5 rounded-full transition ${isSecret ? 'is-active bg-white shadow text-slate-900' : 'text-slate-600 hover:text-slate-800'}`}
             >
-              <Lock className="w-4 h-4" />
-              Секретные чаты
+              <Lock className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">Секретные</span>
+              <span className="sm:hidden">Секр.</span>
             </button>
           </div>
         </div>
 
         <button
           onClick={openNewChatPicker}
-          className="flex items-center gap-2 rounded-full bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 px-4 py-2 text-sm font-medium text-white transition"
+          className="flex items-center gap-1 sm:gap-2 rounded-full bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm font-medium text-white transition flex-shrink-0 whitespace-nowrap"
         >
-          <Plus className="w-4 h-4" /> Новый чат
+          <Plus className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+          <span className="hidden sm:inline">Новый чат</span>
+          <span className="sm:hidden">Новый</span>
         </button>
       </div>
 
       <div className={`px-4 py-2 text-sm border-b flex-shrink-0 ${isSecret ? 'bg-emerald-50 border-emerald-200 text-emerald-800' : 'bg-slate-100 border-slate-200 text-slate-600'}`}>
         {isSecret ? (
-          <div className="flex items-center gap-2 max-w-5xl mx-auto">
+          <div className="flex items-center gap-2 w-full max-w-full mx-auto">
             <Shield className="w-4 h-4 flex-shrink-0" />
-            <span>
+            <span className="min-w-0 break-words">
               <strong>Секретный чат</strong> — сообщения зашифрованы на вашем устройстве. Сервер не может их прочитать.
             </span>
           </div>
         ) : (
-          <div className="max-w-5xl mx-auto">
+          <div className="w-full max-w-full mx-auto">
             Обычные сообщения хранятся на сервере.
           </div>
         )}
@@ -927,7 +931,7 @@ export default function Messages() {
               </div>
 
               {/* Messages area */}
-              <div className="messages-chat-area flex-1 overflow-y-auto p-4 md:p-6 space-y-4 bg-slate-50">
+              <div className="messages-chat-area flex-1 overflow-y-auto overflow-x-hidden p-3 sm:p-4 md:p-6 space-y-4 bg-slate-50 w-full">
                 {chatLoading && (
                   <div className="text-center py-8 text-sm text-slate-500">Загрузка…</div>
                 )}
@@ -1018,37 +1022,37 @@ export default function Messages() {
               >
                 {/* Attachment preview bar */}
                 {attachment && (
-                  <div className="mb-3 flex items-center gap-3 rounded-2xl border border-slate-200 bg-slate-50 p-2 pr-3">
-                    <div className="flex-1 min-w-0 flex items-center gap-3">
+                  <div className="mb-3 flex items-center gap-2 sm:gap-3 rounded-2xl border border-slate-200 bg-slate-50 p-2 pr-3 overflow-hidden">
+                    <div className="flex-1 min-w-0 flex items-center gap-2 sm:gap-3">
                       {attachment.type === 'image' && (
-                        <img src={attachment.previewUrl} alt="preview" className="h-12 w-12 rounded-xl object-cover border" />
+                        <img src={attachment.previewUrl} alt="preview" className="h-9 w-9 sm:h-12 sm:w-12 rounded-xl object-cover border flex-shrink-0" />
                       )}
                       {attachment.type === 'video' && (
-                        <video src={attachment.previewUrl} className="h-12 w-16 rounded-xl object-cover border bg-black" muted />
+                        <video src={attachment.previewUrl} className="h-9 w-12 sm:h-12 sm:w-16 rounded-xl object-cover border bg-black flex-shrink-0" muted />
                       )}
                       {attachment.type === 'voice' && (
-                        <div className="flex items-center gap-2">
-                          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-emerald-100 text-emerald-600">
-                            <span className="text-lg">🎤</span>
+                        <div className="flex items-center gap-2 flex-shrink-0">
+                          <div className="flex h-8 w-8 sm:h-10 sm:w-10 items-center justify-center rounded-full bg-emerald-100 text-emerald-600">
+                            <span className="text-base sm:text-lg">🎤</span>
                           </div>
-                          <audio src={attachment.previewUrl} controls className="h-9" />
+                          <audio src={attachment.previewUrl} controls className="h-8 sm:h-9" />
                           {attachment.duration != null && (
                             <span className="text-xs tabular-nums text-slate-500">{attachment.duration}s</span>
                           )}
                         </div>
                       )}
-                      <div className="min-w-0 text-sm">
+                      <div className="min-w-0 text-xs sm:text-sm">
                         <div className="font-medium truncate">
                           {attachment.type === 'voice' ? 'Голосовое сообщение' : attachment.file.name}
                         </div>
-                        <div className="text-[10px] text-slate-500">
+                        <div className="text-[9px] sm:text-[10px] text-slate-500">
                           {(attachment.file.size / 1024 / 1024).toFixed(1)} МБ
                         </div>
                       </div>
                     </div>
                     <button
                       onClick={removeAttachment}
-                      className="rounded-full p-1 text-slate-400 hover:bg-slate-200 hover:text-red-500"
+                      className="rounded-full p-1 text-slate-400 hover:bg-slate-200 hover:text-red-500 flex-shrink-0"
                       title="Удалить вложение"
                     >
                       <X className="w-4 h-4" />

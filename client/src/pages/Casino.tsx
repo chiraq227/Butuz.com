@@ -1793,7 +1793,7 @@ export default function Casino() {
   );
 
   return (
-    <div className="w-full max-w-6xl mx-auto px-3 sm:px-4 py-5 sm:py-6">
+    <div className="w-full max-w-6xl mx-auto px-3 sm:px-4 py-5 sm:py-6 overflow-x-hidden">
       <BalanceHeader />
 
      {/* Bet selector - only for actual games, not economy pages. Hide for active coin pvp room (bet is locked). */}
@@ -1826,9 +1826,9 @@ export default function Casino() {
                 setBet(MIN_BET);
               }
             }}
-            className="ml-auto w-44 border rounded-2xl px-4 py-2 font-mono text-lg [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+            className="ml-auto w-32 sm:w-44 border rounded-2xl px-3 sm:px-4 py-1.5 sm:py-2 font-mono text-base sm:text-lg [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
           />
-          <div className="text-xs text-slate-500 w-24">мин {MIN_BET}</div>
+          <div className="text-xs text-slate-500 w-20 sm:w-24 flex-shrink-0">мин {MIN_BET}</div>
         </div>
       )}
 
@@ -1836,7 +1836,7 @@ export default function Casino() {
       {currentGame ? (
         <div className="pb-8 w-full max-w-full overflow-x-hidden">
           {currentGame && !['slots', 'mines', 'blackjack', 'dice', 'roulette', 'coin', 'plinko'].includes(currentGame) && (
-            <div className="max-w-md mx-auto text-center py-12">
+            <div className="w-full max-w-md mx-auto text-center py-12">
               <div className="text-7xl mb-4">🚧</div>
               <div className="text-3xl font-bold mb-3">В разработке!</div>
               <p className="text-sm opacity-70 mb-1">Игра «{currentGame?.toUpperCase()}»</p>
@@ -1855,7 +1855,7 @@ export default function Casino() {
               </div>
 
               <div
-                className="rounded-3xl p-5 sm:p-6 mb-4 border"
+                className="rounded-3xl p-3 sm:p-5 mb-4 border overflow-x-hidden w-full"
                 style={{
                   background: 'linear-gradient(180deg, var(--game-felt) 0%, var(--game-felt2) 100%)',
                   borderColor: 'var(--game-border)',
@@ -1887,13 +1887,13 @@ export default function Casino() {
                     {(minesSession || minesOpened.length > 0 || minesLost) ? (
                       /* 5x5 Grid - bigger cells + overlay for result */
                       <div className="relative">
-                        <div className="grid grid-cols-5 gap-3">
+                        <div className="grid grid-cols-5 gap-2 sm:gap-3">
                           {Array.from({ length: 25 }).map((_, i) => {
                             const opened = minesOpened.includes(i);
                             const isBomb = !!(minesLost?.mines && minesLost.mines.includes(i));
                             const isExploded = opened && isBomb;
 
-                            let cls = 'h-16 sm:h-20 rounded-2xl border flex items-center justify-center text-3xl transition-all active:scale-[0.92] select-none ';
+                            let cls = 'h-12 sm:h-16 rounded-2xl border flex items-center justify-center text-2xl sm:text-3xl transition-all active:scale-[0.92] select-none ';
                             let content: React.ReactNode = '';
 
                             if (opened) {
@@ -3322,7 +3322,7 @@ export default function Casino() {
           </div>
 
           {hubView === 'economy' && (
-            <div className="mb-8">
+            <div className="mb-8 w-full overflow-x-hidden">
               <div className="flex items-center justify-between mb-3">
                 <div className="text-2xl font-semibold">Экономика</div>
                 {activeTab && (
@@ -3360,7 +3360,7 @@ export default function Casino() {
 
            {/* Full economy content - shown big when selected */}
             {activeTab === 'farm' && farm && (
-              <div className="bg-white border rounded-3xl p-6 mb-4" style={{backgroundColor:'var(--card)'}}>
+              <div className="bg-white border rounded-3xl p-4 sm:p-6 mb-4 w-full overflow-x-hidden" style={{backgroundColor:'var(--card)'}}>
                 {/* Header */}
                 <div className="text-2xl font-bold mb-4">⛏️ Майнинг-ферма</div>
 
@@ -3381,12 +3381,12 @@ export default function Casino() {
 
                       <div className="mt-3">
                         <div className="text-xs uppercase tracking-wide opacity-60">Скорость майнинга</div>
-                        <div className="text-4xl font-bold tabular-nums text-emerald-600">
+                        <div className="text-3xl sm:text-4xl font-bold tabular-nums text-emerald-600 break-all">
                           {(() => {
                             const base = farm.farm?.btc_per_hour || 0;
                             const extraRate = (farm.level === 10 ? (farm.extra || 0) * base : 0);
                             return (base + extraRate).toFixed(3);
-                          })()} <span className="text-xl">BTC/ч</span>
+                          })()} <span className="text-lg sm:text-xl">BTC/ч</span>
                         </div>
                       </div>
                     </div>
@@ -3399,9 +3399,9 @@ export default function Casino() {
                 </div>
 
                 {/* Accumulated - most important number, very prominent */}
-                <div className="mb-6 p-5 rounded-2xl bg-emerald-50 border border-emerald-100">
+                <div className="mb-6 p-5 rounded-2xl bg-emerald-50 border border-emerald-100 overflow-x-hidden">
                   <div className="text-xs uppercase tracking-[1px] text-emerald-700">НАКОПЛЕНО</div>
-                  <div className="mt-1 font-mono text-5xl font-bold tabular-nums text-emerald-600">
+                  <div className="mt-1 font-mono text-3xl sm:text-5xl font-bold tabular-nums text-emerald-600 break-all">
                     {(farm.totalBtc || 0).toFixed(6)}
                   </div>
                   <div className="text-xl mt-1">
@@ -3450,7 +3450,7 @@ export default function Casino() {
                           <button 
                             key={n} 
                             onClick={() => farmBuyExtra(n)} 
-                            className="flex-1 min-w-[68px] py-2.5 text-sm font-medium border rounded-2xl active:bg-slate-100"
+                            className="flex-1 min-w-[60px] sm:min-w-[68px] py-2.5 text-sm font-medium border rounded-2xl active:bg-slate-100"
                           >
                             +{n}
                           </button>
@@ -3726,7 +3726,7 @@ export default function Casino() {
                                   Вложено {new Date(d.start_at).toLocaleDateString('ru-RU')} • созревает {new Date(d.matures_at).toLocaleDateString('ru-RU')}
                                 </div>
 
-                                <div className="sm:text-right sm:min-w-[140px]">
+                                <div className="sm:text-right sm:min-w-[100px] sm:min-w-[140px]">
                                   {d.is_matured ? (
                                     <>
                                       <span className="text-emerald-700 font-medium">Готов к выплате</span>
@@ -4176,7 +4176,7 @@ export default function Casino() {
                         value={transferTo} 
                         onChange={e=>setTransferTo(e.target.value)} 
                         placeholder="username получателя" 
-                        className="border px-3 py-2 rounded-2xl flex-1 min-w-[140px]" 
+                        className="border px-3 py-2 rounded-2xl flex-1 min-w-[100px] sm:min-w-[140px]" 
                         style={{backgroundColor:'var(--input-bg)'}} 
                       />
                       <input 
