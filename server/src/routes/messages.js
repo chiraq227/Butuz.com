@@ -209,18 +209,23 @@ router.get('/conversations', authMiddleware, async (req, res) => {
     const rows = await db.all(`
       SELECT 
         other_id,
-        MAX(created_at) as last_at
+        MAX(created_at) as last_at,
+        (SELECT content FROM ${table} mm 
+          WHERE (mm.sender_id = ? OR mm.recipient_id = ?) 
+            AND (CASE WHEN mm.sender_id = ? THEN mm.recipient_id ELSE mm.sender_id END) = main.other_id 
+          ORDER BY mm.created_at DESC, mm.id DESC 
+          LIMIT 1) as last_text
       FROM (
         SELECT 
           CASE WHEN sender_id = ? THEN recipient_id ELSE sender_id END as other_id,
           created_at
         FROM ${table}
         WHERE sender_id = ? OR recipient_id = ?
-      )
+      ) as main
       GROUP BY other_id
       ORDER BY last_at DESC
       LIMIT 100
-    `, [userId, userId, userId]);
+    `, [userId, userId, userId, userId, userId, userId]);
 
     if (rows.length === 0) {
       return res.json([]);

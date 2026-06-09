@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import CreatePost from '../components/CreatePost';
 import PostCard from '../components/PostCard';
 import { api } from '../api/client';
 import { useAuth } from '../contexts/AuthContext';
@@ -43,10 +42,6 @@ export default function Feed() {
     loadPosts();
   }, []);
 
-  const handlePostCreated = (newPost: Post) => {
-    setPosts((prev) => [newPost, ...prev]);
-  };
-
   const handlePostDeleted = (postId: number) => {
     setPosts((prev) => prev.filter((p) => p.id !== postId));
   };
@@ -66,14 +61,7 @@ export default function Feed() {
   };
 
   return (
-    <div className="w-full max-w-2xl mx-auto px-3 sm:px-4 py-5 sm:py-8">
-      <div className="mb-8">
-        <h1 className="text-3xl font-semibold text-slate-900 tracking-tight">Главная лента</h1>
-        <p className="text-slate-500 mt-1">Последние публикации от друзей и сообщества</p>
-      </div>
-
-      <CreatePost onPostCreated={handlePostCreated} />
-
+    <div className="w-full max-w-2xl mx-auto px-3 sm:px-4 py-4 sm:py-6">
       {loading && (
         <div className="flex justify-center py-12">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600" />
@@ -83,12 +71,12 @@ export default function Feed() {
       {error && <div className="p-4 bg-red-50 text-red-600 rounded-2xl mb-4">{error}</div>}
 
       {!loading && posts.length === 0 && (
-        <div className="text-center py-12 text-slate-500">
-          Пока нет постов. Будьте первым!
+        <div className="text-center py-16 text-slate-400">
+          Пока нет публикаций
         </div>
       )}
 
-      <div className="space-y-5 pb-12">
+      <div className="space-y-6 pb-16">
         {posts.map((post) => (
           <PostCard
             key={post.id}

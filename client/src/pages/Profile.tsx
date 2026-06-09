@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import Avatar from '../components/Avatar';
 import PostCard from '../components/PostCard';
+import CreatePost from '../components/CreatePost';
 import { api } from '../api/client';
 import { useAuth } from '../contexts/AuthContext';
 import { useFollow } from '../contexts/FollowContext';
@@ -268,6 +269,18 @@ export default function Profile() {
         </div>
       </div>
 
+      {/* Create post (own profile only) — placed before publications list */}
+      {isOwnProfile && (
+        <CreatePost
+          onPostCreated={(newPost) => {
+            setPosts((prev) => [newPost, ...prev]);
+            if (profile) {
+              setProfile({ ...profile, post_count: (profile.post_count || 0) + 1 });
+            }
+          }}
+        />
+      )}
+
       {/* Бутуз Казино integration */}
       {(profile.casino_level !== undefined || profile.casino_rating !== undefined || profile.casino_vip !== undefined || profile.casino_games_played !== undefined) && (
         <div className="bg-white border border-slate-200 rounded-3xl p-5 mb-6">
@@ -294,11 +307,6 @@ export default function Profile() {
             ) : null}
           </div>
 
-          {isOwnProfile && (
-            <div className="mt-3 text-xs text-slate-500">
-              Полный профиль и переводы — во вкладке «Профиль» внутри казино.
-            </div>
-          )}
         </div>
       )}
 
@@ -310,8 +318,8 @@ export default function Profile() {
         </div>
 
         {posts.length === 0 ? (
-          <div className="text-center py-12 bg-white border border-slate-200 rounded-2xl text-slate-500">
-            {isOwnProfile ? 'У вас пока нет постов. Опубликуйте первый!' : 'У пользователя пока нет постов.'}
+          <div className="text-center py-12 bg-white border border-slate-200 rounded-2xl text-slate-400">
+            {isOwnProfile ? 'Нет публикаций' : 'Нет публикаций'}
           </div>
         ) : (
           <div className="space-y-5">

@@ -12,10 +12,7 @@ export default function ThemeSwitcher({ compact = false }: { compact?: boolean }
   return (
     <div>
       {!compact && (
-        <div className="mb-4">
-          <div className="text-sm font-medium text-slate-700 mb-1">Оформление</div>
-          <div className="text-xs text-slate-500">Выберите светлую или тёмную тему. Сохранится в настройках профиля.</div>
-        </div>
+        <div className="mb-3 text-sm font-medium text-slate-700">Тема оформления</div>
       )}
 
       <div className={`grid grid-cols-2 gap-3 ${compact ? 'max-w-[180px]' : ''}`}>
@@ -55,11 +52,8 @@ export default function ThemeSwitcher({ compact = false }: { compact?: boolean }
       </div>
 
       {!compact && current && (
-        <div className="mt-4 text-xs text-slate-500 flex items-center gap-1.5">
-          Текущая тема: 
-          <span className="font-medium text-slate-700 flex items-center gap-1">
-            <span className="text-base leading-none">{current.icon}</span> {current.name}
-          </span>
+        <div className="mt-3 text-xs text-slate-400">
+          {current.name}
         </div>
       )}
     </div>

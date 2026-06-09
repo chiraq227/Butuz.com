@@ -365,7 +365,7 @@ export default function PostCard({ post, onDelete, onLikeChange, onBookmarkChang
 
           <div className="space-y-3 max-h-64 overflow-auto pr-1">
             {comments.length === 0 && !loadingComments && (
-              <div className="text-sm text-slate-500 py-1">Пока нет комментариев. Будьте первым!</div>
+              <div className="text-sm text-slate-400 py-1">Нет комментариев</div>
             )}
             {comments.map((comment) => (
               <div key={comment.id} className="flex gap-2 text-sm">

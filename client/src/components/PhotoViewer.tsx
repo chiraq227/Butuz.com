@@ -302,7 +302,7 @@ function PhotoModal({ isOpen, onClose, data }: {
               )}
 
               {!loadingComments && comments.length === 0 && (
-                <div className="text-center py-3 text-slate-400 text-xs">Пока нет комментариев. Будьте первым!</div>
+                <div className="text-center py-3 text-slate-400 text-xs">Нет комментариев</div>
               )}
 
               {comments.map((comment) => {

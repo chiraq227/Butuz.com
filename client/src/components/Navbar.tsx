@@ -210,11 +210,7 @@ export default function Navbar() {
                 </div>
               )}
 
-              {totalResults > 0 && (
-                <div className="px-4 pt-2 text-[10px] text-slate-400 text-center">
-                  Нажмите на результат, чтобы перейти
-                </div>
-              )}
+              {totalResults > 0 && null}
             </div>
           )}
         </div>

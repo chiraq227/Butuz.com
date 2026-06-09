@@ -3,7 +3,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { api } from '../api/client';
 import Avatar from '../components/Avatar';
 import {
-  MessageCircle, Send, Plus, Search, Users, Lock, Shield, ArrowLeft, X, ZoomIn
+  MessageCircle, Send, Plus, Search, Lock, ArrowLeft, X, ZoomIn
 } from 'lucide-react';
 import { usePhotoViewer } from '../components/PhotoViewer';
 import {
@@ -25,6 +25,7 @@ interface Conversation {
   };
   last_at: string | null;
   mode?: string;
+  last_text?: string | null;
 }
 
 interface RegularMsg {
@@ -855,93 +856,62 @@ export default function Messages() {
         </button>
       </div>
 
-      <div className={`px-4 py-2 text-sm border-b flex-shrink-0 ${isSecret ? 'bg-emerald-50 border-emerald-200 text-emerald-800' : 'bg-slate-100 border-slate-200 text-slate-600'}`}>
-        {isSecret ? (
-          <div className="flex items-center gap-2 w-full max-w-full mx-auto">
-            <Shield className="w-4 h-4 flex-shrink-0" />
-            <span className="min-w-0 break-words">
-              <strong>Секретный чат</strong> — сообщения зашифрованы на вашем устройстве. Сервер не может их прочитать.
-            </span>
-          </div>
-        ) : (
-          <div className="w-full max-w-full mx-auto">
-            Обычные сообщения хранятся на сервере.
-          </div>
-        )}
-      </div>
-
       {error && (
         <div className="px-4 py-2 bg-red-50 border-b border-red-200 text-red-700 text-sm flex-shrink-0">{error}</div>
       )}
 
-      {isSecret && keyLoading && (
-        <div className="px-4 py-1.5 bg-indigo-50 text-indigo-700 text-sm flex-shrink-0">Подготавливаем ключи секретного чата…</div>
-      )}
-
       {/* Main chat area - full width, two pane (mobile: stack, show list OR chat) */}
       <div className="flex-1 flex overflow-hidden min-h-0">
-        {/* Conversations sidebar / list */}
+        {/* Conversations sidebar / list — Telegram style */}
         <div className={`${selectedUser ? 'hidden md:flex' : 'flex'} w-full md:w-80 border-r bg-white flex flex-col flex-shrink-0`}>
-          <div className="px-4 py-3 text-xs font-semibold tracking-widest text-slate-500 border-b flex items-center gap-2 bg-slate-50">
-            <Users className="w-3.5 h-3.5" />
-            {isSecret ? 'СЕКРЕТНЫЕ ЧАТЫ' : 'ЧАТЫ'}
-            <span className="ml-auto text-slate-400 font-normal">{conversations.length}</span>
+          <div className="px-4 py-3 text-sm font-semibold border-b flex items-center bg-white">
+            {isSecret ? 'Секретные чаты' : 'Чаты'}
+            <span className="ml-auto text-xs text-slate-400">{conversations.length}</span>
           </div>
 
           <div className="overflow-y-auto flex-1">
             {conversations.length === 0 ? (
-              <div className="p-6 text-center text-sm text-slate-500">
-                {isSecret ? (
-                  <>Нет секретных чатов.<br />Начните первый секретный чат с того, кто уже открывал «Секретные чаты».</>
-                ) : (
-                  <>Пока нет чатов.<br />Начните переписку через «Новый чат».</>
-                )}
+              <div className="p-6 text-center text-sm text-slate-400">
+                Нет чатов
               </div>
             ) : (
               conversations.map((c) => {
                 const active = selectedUser?.id === c.user.id;
+                const lastText = c.last_text || (isSecret ? '• • •' : '');
+                const timeStr = c.last_at ? new Date(c.last_at).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' }) : '';
                 return (
                   <button
                     key={c.user.id}
                     onClick={() => openChat(c.user as any)}
-                    className={`conversation-item w-full px-4 py-3 flex items-center gap-3 text-left hover:bg-slate-50 border-b border-slate-100 transition ${active ? 'is-active' : ''}`}
+                    className={`w-full px-3 py-3 flex items-start gap-3 text-left hover:bg-slate-50 border-b border-slate-100 transition ${active ? 'bg-slate-50' : ''}`}
                   >
-                    <Avatar src={c.user.avatar} alt={c.user.username} size="sm" />
-                    <div className="min-w-0 flex-1">
-                      <div className="font-medium truncate text-slate-900">{c.user.display_name}</div>
-                      <div className="text-xs text-slate-500 truncate">@{c.user.username}</div>
+                    <Avatar src={c.user.avatar} alt={c.user.username} size="md" />
+                    <div className="min-w-0 flex-1 pt-0.5">
+                      <div className="flex items-center gap-2">
+                        <div className="font-semibold text-slate-900 truncate">{c.user.display_name}</div>
+                        {timeStr && <div className="ml-auto text-[11px] text-slate-400 tabular-nums flex-shrink-0">{timeStr}</div>}
+                      </div>
+                      <div className="text-sm text-slate-500 truncate mt-0.5 pr-8">
+                        {lastText || 'Нет сообщений'}
+                      </div>
                     </div>
-                    {isSecret && !c.user.has_public_key && (
-                      <Lock className="w-3.5 h-3.5 text-amber-500" />
-                    )}
+                    {/* Unread badge (structure per spec; count not per-chat in current data) */}
+                    <div className="w-5 flex-shrink-0 pt-1">
+                      {/* e.g. <span className="ml-auto inline-block min-w-[18px] h-[18px] px-1.5 rounded-full bg-red-600 text-white text-[10px] text-center">3</span> */}
+                    </div>
                   </button>
                 );
               })
             )}
-          </div>
-
-          <div className="p-3 text-[11px] text-slate-400 border-t bg-slate-50">
-            {isSecret ? 'Только вы и собеседник могут читать' : 'Обновляется автоматически'}
           </div>
         </div>
 
         {/* Chat pane - takes remaining full width (on mobile only show when a chat is selected) */}
         <div className={`${!selectedUser ? 'hidden md:flex' : 'flex'} flex-1 flex flex-col min-w-0 bg-white`}>
           {!selectedUser ? (
-            <div className="flex-1 flex flex-col items-center justify-center text-center p-10 text-slate-500">
-              <MessageCircle className="w-14 h-14 mb-5 text-slate-200" />
-              <div className="text-xl font-medium text-slate-700 mb-1">Выберите чат</div>
-              <p className="max-w-xs text-sm">
-                {isSecret
-                  ? 'Секретные чаты используют настоящее сквозное шифрование. Оба пользователя должны хотя бы раз открыть режим «Секретные чаты».'
-                  : 'Можете писать любому пользователю. Второй человек получит сообщение, как только зайдёт в приложение.'}
-              </p>
-              <button
-                onClick={openNewChatPicker}
-                className="mt-6 px-5 py-2 rounded-full bg-indigo-600 text-white text-sm flex items-center gap-2 hover:bg-indigo-700"
-              >
-                <Plus className="w-4 h-4" /> Начать новый чат
-              </button>
+            <div className="flex-1 flex flex-col items-center justify-center text-center p-10 text-slate-400">
+              <MessageCircle className="w-12 h-12 mb-4 text-slate-200" />
+              <div className="text-base">Выберите чат</div>
             </div>
           ) : (
             <>
@@ -963,9 +933,7 @@ export default function Messages() {
                   <div className="text-xs text-slate-500">@{selectedUser.username}</div>
                 </div>
 
-                <div className={`flex items-center gap-1.5 text-xs px-3 py-1 rounded-full ${isSecret ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-600'}`}>
-                  {isSecret ? <><Lock className="w-3.5 h-3.5" /> Полное E2EE</> : 'Обычный чат'}
-                </div>
+                {isSecret && <Lock className="w-4 h-4 text-emerald-600" />}
               </div>
 
               {/* Messages area */}
@@ -975,8 +943,8 @@ export default function Messages() {
                 )}
 
                 {!chatLoading && displayMessages.length === 0 && (
-                  <div className="text-center py-12 text-slate-500 text-sm">
-                    Нет сообщений. Напишите первым!
+                  <div className="text-center py-12 text-slate-400 text-sm">
+                    Нет сообщений
                   </div>
                 )}
 
@@ -1126,15 +1094,7 @@ export default function Messages() {
                       }
                     }}
                     onPaste={handlePaste}
-                    placeholder={
-                      isRecording
-                        ? 'Говорите…'
-                        : isSecret
-                          ? 'Сообщение будет зашифровано на вашем устройстве…'
-                          : attachment
-                            ? 'Добавьте подпись (необязательно)…'
-                            : 'Напишите сообщение… (можно вставить фото из буфера)'
-                    }
+                    placeholder={isRecording ? 'Говорите…' : 'Сообщение'}
                     className="flex-1 rounded-full border border-slate-200 bg-white px-5 py-3 text-[15px] focus:outline-none focus:border-indigo-300 disabled:bg-slate-100"
                     disabled={chatLoading || isRecording}
                   />
@@ -1183,12 +1143,6 @@ export default function Messages() {
                     <Send className="w-4 h-4" />
                     <span className="hidden sm:inline text-sm">Отправить</span>
                   </button>
-                </div>
-
-                <div className="text-center text-[11px] text-slate-400 mt-2">
-                  {isSecret
-                    ? 'Зашифровано на устройстве • сервер не может прочитать'
-                    : 'Обычный чат • медиа сжимаются автоматически'}
                 </div>
 
                 {/* Hidden file inputs for gallery + camera */}
@@ -1257,10 +1211,8 @@ export default function Messages() {
               )}
             </div>
 
-            <div className="px-5 py-3 text-xs text-slate-500 bg-slate-50 border-t">
-              {isSecret
-                ? 'Для секретного чата собеседник должен хотя бы раз открыть режим «Секретные чаты».'
-                : 'Обычный чат доступен сразу всем пользователям.'}
+            <div className="px-5 py-3 text-xs text-slate-400 bg-slate-50 border-t">
+              {isSecret ? 'Секретный чат' : 'Обычный чат'}
             </div>
           </div>
         </div>

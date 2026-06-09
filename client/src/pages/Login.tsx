@@ -38,7 +38,7 @@ export default function Login() {
             </div>
             <span className="text-4xl font-bold logo-gradient">Бутуз</span>
           </div>
-          <p className="text-slate-600">Войдите в свою социальную сеть</p>
+          <p className="text-slate-500 text-sm">Вход</p>
         </div>
 
         <div className="bg-white shadow-xl shadow-slate-200 rounded-3xl p-8">

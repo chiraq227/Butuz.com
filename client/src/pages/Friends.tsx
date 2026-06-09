@@ -81,12 +81,11 @@ export default function Friends() {
 
   return (
     <div className="w-full max-w-2xl mx-auto px-3 sm:px-4 py-5 sm:py-8">
-      <div className="mb-8">
+      <div className="mb-6">
         <div className="flex items-center gap-3 mb-2">
-          <Users className="w-8 h-8 text-slate-700" />
-          <h1 className="text-3xl font-semibold text-slate-900 tracking-tight">Друзья</h1>
+          <Users className="w-7 h-7 text-slate-700" />
+          <h1 className="text-2xl font-semibold text-slate-900 tracking-tight">Друзья</h1>
         </div>
-        <p className="text-slate-500">Подписывайтесь на интересных людей и смотрите их посты</p>
       </div>
 
       {/* Tabs */}

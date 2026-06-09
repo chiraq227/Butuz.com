@@ -66,12 +66,9 @@ export default function Bookmarks() {
 
   return (
     <div className="w-full max-w-2xl mx-auto px-3 sm:px-4 py-5 sm:py-8">
-      <div className="mb-8 flex items-center gap-3">
-        <Bookmark className="w-8 h-8 text-slate-700" />
-        <div>
-          <h1 className="text-3xl font-semibold text-slate-900 tracking-tight">Закладки</h1>
-          <p className="text-slate-500 mt-1">Сохранённые посты</p>
-        </div>
+      <div className="mb-6 flex items-center gap-3">
+        <Bookmark className="w-7 h-7 text-slate-700" />
+        <h1 className="text-2xl font-semibold text-slate-900 tracking-tight">Закладки</h1>
       </div>
 
       {loading && (
@@ -83,10 +80,8 @@ export default function Bookmarks() {
       {error && <div className="p-4 bg-red-50 text-red-600 rounded-2xl mb-4">{error}</div>}
 
       {!loading && posts.length === 0 && (
-        <div className="text-center py-16 bg-white border border-slate-200 rounded-3xl">
-          <Bookmark className="w-12 h-12 mx-auto text-slate-300 mb-4" />
-          <p className="text-slate-600">У вас пока нет сохранённых постов.</p>
-          <p className="text-sm text-slate-500 mt-1">Нажимайте на значок закладки в ленте, чтобы сохранить интересные записи.</p>
+        <div className="text-center py-16 text-slate-400">
+          Нет закладок
         </div>
       )}
 

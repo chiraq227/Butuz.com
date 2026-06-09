@@ -117,7 +117,7 @@ export default function EditProfile() {
                   </button>
                 ) : null }
               </div>
-              <div className="text-xs text-slate-400 mt-1">JPG, PNG, WebP, HEIC, AVIF и др. до 5 МБ. Автоматически сжимается.</div>
+              <div className="text-xs text-slate-400 mt-1">До 5 МБ</div>
               {avatarFile && <div className="text-xs text-emerald-600 mt-1">Выбран: {avatarFile.name}</div>}
             </div>
           </div>

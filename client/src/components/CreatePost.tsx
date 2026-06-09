@@ -130,7 +130,7 @@ export default function CreatePost({ onPostCreated }: CreatePostProps) {
             <textarea
               value={content}
               onChange={(e) => setContent(e.target.value)}
-              placeholder="Что происходит? (можно вставить фото из буфера)"
+              placeholder="Что у вас нового?"
               className="input w-full resize-y min-h-[90px] text-lg placeholder:text-slate-400 border-0 focus:ring-0 px-2 py-1 rounded-2xl"
               maxLength={1250}
             />

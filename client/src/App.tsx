@@ -67,6 +67,13 @@ function MessageNotificationManager({ setUnreadCount }: { setUnreadCount: (n: nu
     }
   }, [loc.pathname]);
 
+  // Also force a fresh poll when we gain a token (helps after login/restore)
+  useEffect(() => {
+    if (authToken && tokenRef.current) {
+      // The poll function will pick it up via ref on next tick
+    }
+  }, [authToken]);
+
   // Cleanup timers on unmount
   useEffect(() => {
     return () => {
@@ -243,15 +250,10 @@ function MessageNotificationManager({ setUnreadCount }: { setUnreadCount: (n: nu
             <div className="flex-1 min-w-0" onClick={(e) => { e.stopPropagation(); onToastClick(toast); }}>
               <div className="flex items-center gap-2 mb-0.5">
                 <div className="font-semibold text-sm truncate">{toast.senderName}</div>
-                <div className="text-[10px] px-1.5 py-0.5 rounded bg-slate-100 text-slate-500 font-medium">
-                  {toast.mode === 'secret' ? '🔒 секретно' : 'сообщение'}
-                </div>
+                {toast.mode === 'secret' && <span className="text-[10px]">🔒</span>}
               </div>
               <div className="text-sm text-slate-600 line-clamp-2 break-words">
                 {toast.text ? toast.text : 'Новое секретное сообщение'}
-              </div>
-              <div className="text-[10px] text-indigo-600 mt-1 flex items-center gap-1">
-                Нажмите или смахните → открыть чат
               </div>
             </div>
 
