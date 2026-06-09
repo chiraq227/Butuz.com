@@ -1834,7 +1834,7 @@ export default function Casino() {
 
      {/* Dedicated game views or hub — mobile safe */}
       {currentGame ? (
-        <div className="pb-8 w-full max-w-full overflow-x-hidden pt-2">
+        <div className="pb-8 w-full max-w-full overflow-x-hidden pt-4 sm:pt-2">
           {currentGame && !['slots', 'mines', 'blackjack', 'dice', 'roulette', 'coin', 'plinko'].includes(currentGame) && (
             <div className="w-full max-w-md mx-auto text-center py-12">
               <div className="text-7xl mb-4">🚧</div>
@@ -3302,9 +3302,9 @@ export default function Casino() {
         </div>
       ) : (
         /* HUB */
-        <div className="w-full max-w-full overflow-x-hidden pt-14 sm:pt-4">
+        <div className="w-full max-w-full overflow-x-hidden pt-4 sm:pt-16">
          {/* Top level tabs: Economy vs Games (games not always on screen) */}
-          <div className="flex gap-2 mb-6 mt-3 sm:mt-1">
+          <div className="flex gap-2 mb-6 mt-2 sm:mt-0">
             <button
               onClick={() => { setHubView('economy'); setActiveTab(null as any); }}
               className={`flex-1 py-3 rounded-2xl text-lg font-semibold transition ${hubView === 'economy' ? 'text-white' : 'border'}`}
