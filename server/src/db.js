@@ -14,20 +14,58 @@ let isUsingTurso = false;
  * db.get(sql, params), db.all(sql, params), db.run(sql, params), db.exec(sql)
  * interface whether we are on local SQLite or Turso (libSQL).
  */
+function convertBigInts(obj) {
+  if (obj === null || obj === undefined) return obj;
+  if (typeof obj === 'bigint') return Number(obj);
+  if (Array.isArray(obj)) return obj.map(convertBigInts);
+  if (typeof obj === 'object') {
+    const res = {};
+    for (const [k, v] of Object.entries(obj)) {
+      res[k] = convertBigInts(v);
+    }
+    return res;
+  }
+  return obj;
+}
+
+function createLocalAdapterWithBigIntFix(rawDb) {
+  return {
+    async get(sql, params = []) {
+      const row = await rawDb.get(sql, params);
+      return convertBigInts(row);
+    },
+    async all(sql, params = []) {
+      const rows = await rawDb.all(sql, params);
+      return convertBigInts(rows);
+    },
+    async run(sql, params = []) {
+      const result = await rawDb.run(sql, params);
+      return {
+        lastID: result.lastID ? Number(result.lastID) : undefined,
+        changes: result.changes || 0,
+      };
+    },
+    async exec(sql) {
+      await rawDb.exec(sql);
+    },
+  };
+}
+
 function createTursoAdapter(client) {
   return {
     async get(sql, params = []) {
       const result = await client.execute({ sql, args: params || [] });
-      return result.rows.length > 0 ? result.rows[0] : undefined;
+      const row = result.rows.length > 0 ? result.rows[0] : undefined;
+      return convertBigInts(row);
     },
     async all(sql, params = []) {
       const result = await client.execute({ sql, args: params || [] });
-      return result.rows;
+      return convertBigInts(result.rows);
     },
     async run(sql, params = []) {
       const result = await client.execute({ sql, args: params || [] });
       return {
-        lastID: result.lastInsertRowid,
+        lastID: result.lastInsertRowid ? Number(result.lastInsertRowid) : undefined,
         changes: result.rowsAffected || 0,
       };
     },
@@ -77,7 +115,7 @@ export async function initDB() {
     const dbPath = process.env.DB_PATH || './butuz.db';
     const fullPath = path.resolve(__dirname, '..', dbPath);
 
-    db = await open({
+    const rawDb = await open({
       filename: fullPath,
       driver: sqlite3.Database
     });
@@ -85,13 +123,16 @@ export async function initDB() {
     console.log(`Using local SQLite database: ${dbPath}`);
 
     // Enable foreign keys
-    await db.exec('PRAGMA foreign_keys = ON');
+    await rawDb.exec('PRAGMA foreign_keys = ON');
 
     // Production/beta robustness for SQLite (concurrent reads/writes friendly, less locking)
-    await db.exec('PRAGMA journal_mode = WAL;');
-    await db.exec('PRAGMA synchronous = NORMAL;');
-    await db.exec('PRAGMA temp_store = MEMORY;');
-    await db.exec('PRAGMA mmap_size = 30000000000;'); // ~30MB mmap if supported (harmless if not)
+    await rawDb.exec('PRAGMA journal_mode = WAL;');
+    await rawDb.exec('PRAGMA synchronous = NORMAL;');
+    await rawDb.exec('PRAGMA temp_store = MEMORY;');
+    await rawDb.exec('PRAGMA mmap_size = 30000000000;'); // ~30MB mmap if supported (harmless if not)
+
+    // Wrap local db with BigInt converter for consistency with Turso (prevents JSON serialize errors)
+    db = createLocalAdapterWithBigIntFix(rawDb);
   }
 
   // Create tables

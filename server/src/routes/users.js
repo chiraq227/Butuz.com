@@ -361,10 +361,14 @@ router.put('/me', authMiddleware, uploadAvatar, async (req, res) => {
         });
         finalAvatar = cloudResult.url;
       } catch (err) {
-        console.warn('Avatar processing or Cloudinary upload failed, falling back to local storage:', err?.message || err);
-        // Fallback: keep the fileToUse (resized if sharp succeeded, or original if sharp failed)
-        // Do NOT unlink it here — it stays in uploads/ for local serving
-        finalAvatar = `/uploads/${path.basename(fileToUse)}`;
+        console.error('Avatar processing or Cloudinary upload failed:', err?.message || err);
+        const hasCloudinaryConfig = !!(process.env.CLOUDINARY_CLOUD_NAME && process.env.CLOUDINARY_API_KEY && process.env.CLOUDINARY_API_SECRET);
+        if (hasCloudinaryConfig) {
+          throw new Error('Failed to upload avatar to permanent storage.');
+        } else {
+          console.warn('Falling back to local avatar storage (no Cloudinary config)');
+          finalAvatar = `/uploads/${path.basename(fileToUse)}`;
+        }
       }
 
       // Delete previous avatar (local or Cloudinary)

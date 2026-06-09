@@ -146,8 +146,15 @@ router.post('/', authMiddleware, mediaUpload.single('media'), async (req, res) =
         });
         mediaPath = cloudResult.url; // full cloudinary url
       } catch (cloudErr) {
-        console.warn('Cloudinary message media upload failed, using local fallback:', cloudErr.message);
-        mediaPath = path.basename(uploadedFull);
+        console.error('Cloudinary message media upload failed:', cloudErr.message);
+        const hasCloudinaryConfig = !!(process.env.CLOUDINARY_CLOUD_NAME && process.env.CLOUDINARY_API_KEY && process.env.CLOUDINARY_API_SECRET);
+        if (hasCloudinaryConfig) {
+          try { fs.unlinkSync(uploadedFull); } catch (_) {}
+          throw new Error('Failed to upload media to permanent storage.');
+        } else {
+          console.warn('Falling back to local storage for message media (no Cloudinary config)');
+          mediaPath = path.basename(uploadedFull);
+        }
       }
     }
 

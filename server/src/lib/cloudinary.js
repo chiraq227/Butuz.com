@@ -20,6 +20,10 @@ cloudinary.config({
 export async function uploadToCloudinary(localFilePath, options = {}) {
   const { folder = 'butuz', resource_type = 'auto', public_id = undefined } = options;
 
+  if (!process.env.CLOUDINARY_CLOUD_NAME || !process.env.CLOUDINARY_API_KEY || !process.env.CLOUDINARY_API_SECRET) {
+    throw new Error('Cloudinary is not configured (missing CLOUDINARY_* env vars)');
+  }
+
   if (!localFilePath || !fs.existsSync(localFilePath)) {
     throw new Error('Local file not found for Cloudinary upload');
   }

@@ -158,9 +158,17 @@ router.post('/', authMiddleware, upload.single('image'), async (req, res) => {
         });
         imagePath = cloudResult.url; // store full cloudinary secure_url
       } catch (cloudErr) {
-        console.warn('Cloudinary upload failed for post media, falling back to local storage:', cloudErr.message);
-        // Fallback: store basename for local /uploads serving
-        imagePath = path.basename(localToUpload || uploadedFull);
+        console.error('Cloudinary upload failed for post media:', cloudErr.message);
+        const hasCloudinaryConfig = !!(process.env.CLOUDINARY_CLOUD_NAME && process.env.CLOUDINARY_API_KEY && process.env.CLOUDINARY_API_SECRET);
+        if (hasCloudinaryConfig) {
+          // In environments with Cloudinary configured, do not fallback to ephemeral local storage
+          try { fs.unlinkSync(localToUpload || uploadedFull); } catch (_) {}
+          throw new Error('Failed to upload media to permanent storage. Please try again.');
+        } else {
+          // Dev/local fallback only when no Cloudinary keys (ephemeral FS may lose files on restart)
+          console.warn('Falling back to local storage (no Cloudinary config detected)');
+          imagePath = path.basename(localToUpload || uploadedFull);
+        }
       }
     }
 
