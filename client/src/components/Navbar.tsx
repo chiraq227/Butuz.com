@@ -128,12 +128,13 @@ export default function Navbar({ headless = false }: { headless?: boolean }) {
     // Search, letter logo, and right controls (profile + notifs) stay roughly in the old positions
     // but as floating elements on the page background. Right controls have borders to look like buttons.
     return (
-      <div className="w-full flex items-center gap-4 px-4 py-3">
-        {/* Custom icon logo from assets/logos (the one without text, just the B).
-            Logo component automatically chooses light/dark version. */}
-        <Link to="/" className="flex-shrink-0">
-          <Logo variant="icon" className="h-8 w-8" />
-        </Link>
+      <div className="fixed top-0 left-0 right-0 z-[100] border-b" style={{ backgroundColor: 'var(--card)' }}>
+        <div className="max-w-7xl mx-auto px-4 h-14 flex items-center gap-4">
+          {/* Custom icon logo from assets/logos (the one without text, just the B).
+              Logo component automatically chooses light/dark version. */}
+          <Link to="/" className="flex-shrink-0">
+            <Logo variant="icon" className="h-8 w-8" />
+          </Link>
 
         {/* Search bar - centered */}
         <div className="flex-1 flex justify-center">
@@ -277,6 +278,7 @@ export default function Navbar({ headless = false }: { headless?: boolean }) {
               </div>
             )}
           </div>
+        </div>
         </div>
       </div>
     );

@@ -3324,7 +3324,7 @@ export default function Casino() {
         </div>
       ) : (
         /* HUB */
-        <div className="w-full max-w-full overflow-x-hidden pt-2 pb-20">
+        <div className="w-full max-w-full overflow-x-hidden pt-16 pb-20">
          {/* Top level tabs: Economy vs Games (games not always on screen) */}
           <div className="flex gap-2 mb-6 mt-2 sm:mt-4">
             <button
