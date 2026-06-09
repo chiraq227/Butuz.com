@@ -105,7 +105,7 @@ export default function Settings() {
           <input
             type="checkbox"
             checked={!!(user as any)?.casino_hide_balance}
-            onChange={async (e) => {
+            onChange={async (e: React.ChangeEvent<HTMLInputElement>) => {
               if (!token || !user) return;
               const hide = e.target.checked;
               try {
