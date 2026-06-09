@@ -1662,7 +1662,7 @@ export default function Casino() {
   // ====================== ALWAYS VISIBLE BALANCE HEADER (fully respects profile theme, including dark) ======================
   const BalanceHeader = () => (
     <div 
-      className="sticky top-24 z-[60] backdrop-blur border-b mb-3 px-3 sm:px-4 py-2.5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-y-1.5 gap-x-2 rounded-b-2xl shadow-sm overflow-x-hidden"
+      className="sticky top-14 z-[60] backdrop-blur border-b mb-3 px-3 sm:px-4 py-2.5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-y-1.5 gap-x-2 rounded-b-2xl shadow-sm overflow-x-hidden"
       style={{ 
         backgroundColor: 'color-mix(in srgb, var(--card) 100%, transparent)',
         borderColor: 'var(--border)'
@@ -1820,7 +1820,7 @@ export default function Casino() {
      {/* Bet selector - only for actual games, not economy pages. Hide for active coin pvp room (bet is locked). */}
       {['slots', 'mines', 'blackjack', 'dice', 'roulette', 'coin', 'plinko'].includes(currentGame) &&
         !(currentGame === 'coin' && coinMode === 'pvp' && currentRoom) && (
-        <div className="bg-white border rounded-3xl p-4 mb-6 mt-2 sm:mt-20 flex flex-wrap items-center gap-3" style={{ backgroundColor: 'var(--card)', borderColor: 'var(--border)' }}>
+        <div className="bg-white border rounded-3xl p-4 mb-6 mt-2 flex flex-wrap items-center gap-3" style={{ backgroundColor: 'var(--card)', borderColor: 'var(--border)' }}>
           <div className="font-medium mr-2">Ставка:</div>
           <div className="flex gap-2 flex-wrap">
             {QUICK_BETS.map(q => (
@@ -1855,7 +1855,7 @@ export default function Casino() {
 
      {/* Dedicated game views or hub — mobile safe */}
       {currentGame ? (
-        <div className="pb-8 w-full max-w-full overflow-x-hidden pt-4 sm:pt-20">
+        <div className="pb-8 w-full max-w-full overflow-x-hidden pt-2 pb-20">
           {currentGame && !['slots', 'mines', 'blackjack', 'dice', 'roulette', 'coin', 'plinko'].includes(currentGame) && (
             <div className="w-full max-w-md mx-auto text-center py-12">
               <div className="text-7xl mb-4">🚧</div>
@@ -3324,19 +3324,19 @@ export default function Casino() {
         </div>
       ) : (
         /* HUB */
-        <div className="w-full max-w-full overflow-x-hidden pt-4 sm:pt-20">
+        <div className="w-full max-w-full overflow-x-hidden pt-2 pb-20">
          {/* Top level tabs: Economy vs Games (games not always on screen) */}
           <div className="flex gap-2 mb-6 mt-2 sm:mt-4">
             <button
               onClick={() => { setHubView('economy'); setActiveTab(null as any); }}
-              className={`flex-1 py-3 rounded-2xl text-lg font-semibold transition ${hubView === 'economy' ? 'text-white' : 'border'}`}
+              className={`flex-1 py-3 rounded-2xl text-lg font-semibold transition active:scale-[0.985] ${hubView === 'economy' ? 'text-white' : 'border'}`}
               style={hubView === 'economy' ? { background: 'var(--brand)' } : { backgroundColor: 'var(--card)' }}
             >
               💰 Экономика
             </button>
             <button
               onClick={() => setHubView('games')}
-              className={`flex-1 py-3 rounded-2xl text-lg font-semibold transition ${hubView === 'games' ? 'text-white' : 'border'}`}
+              className={`flex-1 py-3 rounded-2xl text-lg font-semibold transition active:scale-[0.985] ${hubView === 'games' ? 'text-white' : 'border'}`}
               style={hubView === 'games' ? { background: 'var(--brand)' } : { backgroundColor: 'var(--card)' }}
             >
               🎰 Игры
@@ -4241,21 +4241,21 @@ export default function Casino() {
         <div>
           <div className="text-xl font-semibold mb-3">Игры</div>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-8">
-            <button onClick={() => setCurrentGame('slots')} className="bg-white border rounded-3xl p-5 text-left hover:border-[color:var(--brand-500)]" style={{backgroundColor:'var(--card)'}}><div className="text-4xl">🎰</div><div className="font-semibold mt-2">Слоты</div></button>
+            <button onClick={() => setCurrentGame('slots')} className="bg-white border rounded-3xl p-5 text-left hover:border-[color:var(--brand-500)] active:scale-[0.985] active:bg-slate-50 transition" style={{backgroundColor:'var(--card)'}}><div className="text-4xl">🎰</div><div className="font-semibold mt-2">Слоты</div></button>
             {isButuz && (
               <button 
                 onClick={() => setCurrentGame('plinko')} 
-                className="bg-white border rounded-3xl p-5 text-left hover:border-rose-300 relative" 
+                className="bg-white border rounded-3xl p-5 text-left hover:border-rose-300 relative active:scale-[0.985] active:bg-slate-50 transition" 
                 style={{backgroundColor:'var(--card)'}}>
                 <div className="text-4xl">🔴</div>
                 <div className="font-semibold mt-2">Плинко</div>
                 <div className="absolute top-2 right-2 text-[9px] leading-none font-bold px-1.5 py-[1px] rounded bg-red-600 text-white tracking-wider">НЕ ПРОРАБОТАНО</div>
               </button>
             )}
-            <button onClick={() => setCurrentGame('mines')} className="bg-white border rounded-3xl p-5 text-left hover:border-red-300" style={{backgroundColor:'var(--card)'}}><div className="text-4xl">💣</div><div className="font-semibold mt-2">Мины</div></button>
-            <button onClick={() => setCurrentGame('blackjack')} className="bg-white border rounded-3xl p-5 text-left hover:border-violet-300" style={{backgroundColor:'var(--card)'}}><div className="text-4xl">🃏</div><div className="font-semibold mt-2">Блэкджек</div></button>
-            <button onClick={() => setCurrentGame('dice')} className="bg-white border rounded-3xl p-5 text-left" style={{backgroundColor:'var(--card)'}}><div className="text-4xl">🎲</div><div className="font-semibold mt-2">Кости</div></button>
-            <button onClick={() => setCurrentGame('roulette')} className="bg-white border rounded-3xl p-5 text-left" style={{backgroundColor:'var(--card)'}}><div className="text-4xl">🎡</div><div className="font-semibold mt-2">Рулетка</div></button>
+            <button onClick={() => setCurrentGame('mines')} className="bg-white border rounded-3xl p-5 text-left hover:border-red-300 active:scale-[0.985] active:bg-slate-50 transition" style={{backgroundColor:'var(--card)'}}><div className="text-4xl">💣</div><div className="font-semibold mt-2">Мины</div></button>
+            <button onClick={() => setCurrentGame('blackjack')} className="bg-white border rounded-3xl p-5 text-left hover:border-violet-300 active:scale-[0.985] active:bg-slate-50 transition" style={{backgroundColor:'var(--card)'}}><div className="text-4xl">🃏</div><div className="font-semibold mt-2">Блэкджек</div></button>
+            <button onClick={() => setCurrentGame('dice')} className="bg-white border rounded-3xl p-5 text-left active:scale-[0.985] active:bg-slate-50 transition" style={{backgroundColor:'var(--card)'}}><div className="text-4xl">🎲</div><div className="font-semibold mt-2">Кости</div></button>
+            <button onClick={() => setCurrentGame('roulette')} className="bg-white border rounded-3xl p-5 text-left active:scale-[0.985] active:bg-slate-50 transition" style={{backgroundColor:'var(--card)'}}><div className="text-4xl">🎡</div><div className="font-semibold mt-2">Рулетка</div></button>
             {isButuz && (
               <button
                 onClick={() => setCurrentGame('coin')}
