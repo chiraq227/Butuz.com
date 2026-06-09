@@ -1,10 +1,9 @@
 /* Бутуз Custom Styles */
 
-/* Gradient text for logo - uses theme var */
-.logo-gradient {
-  background: var(--brand-gradient);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+/* Brand text (kept for compatibility, but no longer used for main logo) */
+.brand-text {
+  color: var(--brand);
+  font-weight: 600;
 }
 
 /* Card styles */
@@ -32,7 +31,11 @@
 
 /* Auth forms */
 .auth-container {
-  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  background: #f8fafc;
+}
+
+[data-theme="dark"] .auth-container {
+  background: #0f172a;
 }
 
 /* Modern input styles */
@@ -47,10 +50,15 @@
   box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
 }
 
-/* Button primary - base, overridden by theme variables */
+/* Button primary - solid brand color (no gradients) */
 .btn-primary {
-  background: var(--brand-gradient);
+  background: var(--brand);
+  color: white;
   transition: all 0.2s ease;
+}
+
+.btn-primary:hover {
+  background: var(--brand-hover);
 }
 
 .btn-primary:hover {
@@ -79,33 +87,38 @@
   --brand-600: #4f46e5;
   --brand-700: #4338ca;
   --brand-accent: #a855f7;
-  --brand-gradient: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+  --brand: #6366f1;
+  --brand-hover: #4f46e5;
 }
 
 /* Single dark theme brand colors */
 [data-theme="dark"] {
-  --brand-500: #818cf8;
-  --brand-600: #6366f1;
-  --brand-700: #4f46e5;
-  --brand-accent: #c084fc;
-  --brand-gradient: linear-gradient(135deg, #818cf8 0%, #c084fc 100%);
+  --brand-500: #64748b;
+  --brand-600: #475569;
+  --brand-700: #334155;
+  --brand-accent: #94a3b8;
+  --brand: #64748b;
+  --brand-hover: #475569;
 }
 
-/* Brand elements using CSS vars */
+/* Brand elements - solid colors only */
 .btn-primary {
-  background: var(--brand-gradient);
-  transition: all 0.2s ease;
+  background: var(--brand);
+  color: white;
 }
 
 .btn-primary:hover {
+  background: var(--brand-hover);
   transform: translateY(-1px);
   box-shadow: 0 4px 12px -2px rgb(0 0 0 / 0.2);
 }
 
-.logo-gradient {
-  background: var(--brand-gradient);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+/* .logo-gradient removed - no more gradients. Use .brand-text or images instead */
+
+/* Adapt the light full logo (which has letters) for dark theme so letters remain visible.
+   Uses the ready logo that contains the text, color-inverted for dark background. */
+.logo-dark {
+  filter: brightness(0) invert(1);
 }
 
 /* Sidebar active uses brand — respects current profile theme */
@@ -131,7 +144,7 @@
   box-shadow: 0 0 0 3px color-mix(in srgb, var(--brand-500) 12%, transparent);
 }
 
-/* Legacy theme-swatch (kept for compatibility, new picker uses emoji + small gradient dot) */
+/* Theme swatches use solid primary colors (no gradients) */
 .theme-swatch {
   width: 42px;
   height: 42px;
@@ -295,7 +308,7 @@ input[type="submit"] {
 }
 
 [data-theme^="dark"] .auth-container {
-  background: linear-gradient(135deg, #0f172a 0%, #1e2937 100%);
+  background: #0f172a;
 }
 
 /* ============================================

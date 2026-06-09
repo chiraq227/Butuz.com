@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { api } from '../api/client';
+import Logo from '../components/Logo';
 
 export default function Login() {
   const [emailOrUsername, setEmailOrUsername] = useState('');
@@ -30,13 +31,10 @@ export default function Login() {
   return (
     <div className="min-h-screen auth-container flex items-center justify-center px-4">
       <div className="w-full max-w-md">
-        {/* Logo */}
+        {/* Logo - custom (light/dark) */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center gap-3 mb-3">
-            <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-500 flex items-center justify-center">
-              <span className="text-white font-bold text-3xl">Б</span>
-            </div>
-            <span className="text-4xl font-bold logo-gradient">Бутуз</span>
+          <div className="flex justify-center mb-3">
+            <Logo variant="full" className="h-14 w-auto" />
           </div>
           <p className="text-slate-500 text-sm">Вход</p>
         </div>

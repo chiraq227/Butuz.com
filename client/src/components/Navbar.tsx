@@ -2,6 +2,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { Search, Bell, User, LogOut, X } from 'lucide-react';
 import Avatar from './Avatar';
+import Logo from './Logo';
 import { useState, useEffect } from 'react';
 import { api } from '../api/client';
 
@@ -124,13 +125,10 @@ export default function Navbar() {
 
   return (
     <nav className="fixed top-0 left-0 right-0 bg-white border-b border-slate-200 z-[100]">
-      <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
-        {/* Logo */}
-        <Link to="/" className="flex items-center gap-2">
-          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-500 flex items-center justify-center">
-            <span className="text-white font-bold text-xl">Б</span>
-          </div>
-          <span className="text-2xl font-bold logo-gradient tracking-tight">Бутуз</span>
+      <div className="max-w-7xl mx-auto px-4 h-24 flex items-center justify-between">
+        {/* Logo - full custom logo (includes text) */}
+        <Link to="/" className="flex items-center">
+          <Logo variant="full" className="h-20 w-auto" />
         </Link>
 
         {/* Search - always visible but compact on mobile */}

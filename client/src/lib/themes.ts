@@ -16,7 +16,7 @@ export const lightThemes: Theme[] = [
 ];
 
 export const darkThemes: Theme[] = [
-  { id: 'dark', name: 'Тёмная', description: 'Тёмная тема', mode: 'dark', icon: '🌙', primary: '#818cf8', primaryDark: '#6366f1', accent: '#c084fc', gradient: '135deg, #818cf8 0%, #c084fc 100%' },
+  { id: 'dark', name: 'Тёмная', description: 'Тёмная тема', mode: 'dark', icon: '🌙', primary: '#64748b', primaryDark: '#475569', accent: '#94a3b8', gradient: '135deg, #64748b 0%, #94a3b8 100%' },
 ];
 
 export const themes: Theme[] = [...lightThemes, ...darkThemes];

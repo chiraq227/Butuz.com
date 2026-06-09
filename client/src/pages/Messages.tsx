@@ -807,7 +807,7 @@ export default function Messages() {
 
   if (loading) {
     return (
-      <div className="h-[calc(100dvh-4rem)] md:h-[calc(100vh-4rem)] flex items-center justify-center bg-slate-50 pb-16 md:pb-0">
+      <div className="h-[calc(100dvh-6rem)] md:h-[calc(100vh-6rem)] flex items-center justify-center bg-slate-50 pb-16 md:pb-0">
         <div className="animate-spin h-8 w-8 border-b-2 border-indigo-600 rounded-full" />
       </div>
     );
@@ -816,11 +816,11 @@ export default function Messages() {
   const isSecret = mode === 'secret';
 
   return (
-    <div className="h-[calc(100dvh-4rem)] md:h-[calc(100vh-4rem)] flex flex-col bg-slate-50 messages-page pb-16 md:pb-0 w-full overflow-x-hidden">
+    <div className="h-[calc(100dvh-6rem)] md:h-[calc(100vh-6rem)] flex flex-col bg-slate-50 messages-page pb-16 md:pb-0 w-full overflow-x-hidden">
       <div className="flex items-center justify-between border-b bg-white px-2 sm:px-4 py-2 flex-shrink-0 overflow-x-hidden gap-2">
         <div className="flex items-center gap-1.5 min-w-0 flex-1">
           <div className="flex items-center gap-1.5 flex-shrink-0">
-            <div className="w-7 h-7 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-500 flex items-center justify-center">
+            <div className="w-7 h-7 rounded-xl bg-[var(--brand)] flex items-center justify-center">
               <MessageCircle className="w-3.5 h-3.5 text-white" />
             </div>
             <div className="min-w-0">
@@ -1169,7 +1169,7 @@ export default function Messages() {
 
       {/* New chat modal */}
       {showNewChat && (
-        <div className="fixed inset-0 bg-black/40 z-[80] flex items-start justify-center pt-16 p-4" onClick={() => setShowNewChat(false)}>
+        <div className="fixed inset-0 bg-black/40 z-[80] flex items-start justify-center pt-24 p-4" onClick={() => setShowNewChat(false)}>
           <div className="w-full max-w-md bg-white rounded-3xl shadow-2xl overflow-hidden" onClick={(e) => e.stopPropagation()}>
             <div className="flex items-center justify-between px-5 py-4 border-b">
               <div className="font-semibold">Новый чат {isSecret && '(секретный)'}</div>

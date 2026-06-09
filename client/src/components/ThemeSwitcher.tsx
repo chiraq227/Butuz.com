@@ -24,7 +24,7 @@ export default function ThemeSwitcher({ compact = false }: { compact?: boolean }
         >
           <div
             className="w-12 h-12 rounded-full flex items-center justify-center text-3xl shadow-sm"
-            style={{ background: light.gradient }}
+            style={{ background: light.primary }}
           >
             <span className="drop-shadow-sm">{light.icon}</span>
           </div>
@@ -41,7 +41,7 @@ export default function ThemeSwitcher({ compact = false }: { compact?: boolean }
         >
           <div
             className="w-12 h-12 rounded-full flex items-center justify-center text-3xl shadow-sm"
-            style={{ background: dark.gradient }}
+            style={{ background: dark.primary }}
           >
             <span className="drop-shadow-sm">{dark.icon}</span>
           </div>

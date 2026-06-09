@@ -396,12 +396,12 @@ function App() {
 
             <div className="flex w-full min-w-0">
               {isAuthenticated && !isMessagesPage && (
-                <div className={`sidebar-left hidden lg:block fixed left-0 top-16 h-[calc(100vh-4rem)] overflow-y-auto border-r border-slate-200 bg-white transition-all ${sidebarCollapsed ? 'w-16' : 'w-64'}`}>
+                <div className={`sidebar-left hidden lg:block fixed left-0 top-24 h-[calc(100vh-6rem)] overflow-y-auto border-r border-slate-200 bg-white transition-all ${sidebarCollapsed ? 'w-16' : 'w-64'}`}>
                   <Sidebar collapsed={sidebarCollapsed} onToggle={toggleSidebar} />
                 </div>
               )}
 
-              <main className={`flex-1 min-w-0 ${isAuthenticated && !isMessagesPage ? (sidebarCollapsed ? 'lg:ml-16' : 'lg:ml-64') : ''} pt-16 ${isAuthenticated ? 'pb-16 lg:pb-0' : ''}`}>
+              <main className={`flex-1 min-w-0 ${isAuthenticated && !isMessagesPage ? (sidebarCollapsed ? 'lg:ml-16' : 'lg:ml-64') : ''} pt-24 ${isAuthenticated ? 'pb-16 lg:pb-0' : ''}`}>
                 <Routes>
                   <Route 
                     path="/" 

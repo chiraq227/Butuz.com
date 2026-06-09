@@ -1662,7 +1662,7 @@ export default function Casino() {
   // ====================== ALWAYS VISIBLE BALANCE HEADER (fully respects profile theme, including dark) ======================
   const BalanceHeader = () => (
     <div 
-      className="sticky top-16 z-[60] backdrop-blur border-b mb-3 px-3 sm:px-4 py-2.5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-y-1.5 gap-x-2 rounded-b-2xl shadow-sm overflow-x-hidden"
+      className="sticky top-24 z-[60] backdrop-blur border-b mb-3 px-3 sm:px-4 py-2.5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-y-1.5 gap-x-2 rounded-b-2xl shadow-sm overflow-x-hidden"
       style={{ 
         backgroundColor: 'color-mix(in srgb, var(--card) 100%, transparent)',
         borderColor: 'var(--border)'
@@ -1673,12 +1673,12 @@ export default function Casino() {
         <div className="flex items-center gap-2 flex-shrink-0">
           <div 
             className="w-8 h-8 rounded-xl flex items-center justify-center" 
-            style={{ background: 'var(--brand-gradient)' }}
+            style={{ background: 'var(--brand)' }}
           >
             <Coins className="w-4 h-4 text-white" />
           </div>
           <div className="min-w-0">
-            <span className="font-bold text-base sm:text-lg logo-gradient leading-none">Бутуз Казино</span>
+            <span className="font-bold text-base sm:text-lg text-[var(--brand)] leading-none">Бутуз Казино</span>
             {currentGame && (
               <span 
                 className="ml-1.5 text-[10px] px-1.5 py-0.5 rounded align-middle"
@@ -1970,7 +1970,7 @@ export default function Casino() {
                                 <button
                                   onClick={() => startMines()}
                                   className="py-2.5 rounded-xl font-semibold text-sm active:scale-[0.985]"
-                                  style={{ background: 'var(--brand-gradient)' }}
+                                  style={{ background: 'var(--brand)' }}
                                 >
                                   🔄 Играть снова
                                 </button>
@@ -1991,7 +1991,7 @@ export default function Casino() {
                         onClick={startMines}
                         disabled={bet < MIN_BET}
                         className="w-full h-40 sm:h-48 rounded-2xl text-white font-bold text-xl active:scale-[0.985] disabled:opacity-70 flex items-center justify-center"
-                        style={{ background: 'var(--brand-gradient)' }}
+                        style={{ background: 'var(--brand)' }}
                       >
                         💣 НАЧАТЬ ИГРУ • {fmt(bet)}
                       </button>
@@ -2037,7 +2037,7 @@ export default function Casino() {
                   <button
                     onClick={() => startMines()}
                     className="w-full mt-4 py-3 rounded-2xl font-semibold text-base active:scale-[0.985]"
-                    style={{ background: 'var(--brand-gradient)' }}
+                    style={{ background: 'var(--brand)' }}
                   >
                     🔄 Играть снова • {fmt(bet)}
                   </button>
@@ -2258,7 +2258,7 @@ export default function Casino() {
                     onClick={() => startBJ()}
                     disabled={bjAnimating || bet < MIN_BET}
                     className="w-full py-4 text-xl rounded-2xl text-white font-bold active:scale-[0.985] disabled:opacity-70 shadow"
-                    style={{ background: 'var(--brand-gradient)' }}
+                    style={{ background: 'var(--brand)' }}
                   >
                     {bjAnimating ? 'РАЗДАЁМ...' : `🃏 НАЧАТЬ РАЗДАЧУ • ${fmt(bet)}`}
                   </button>
@@ -2351,14 +2351,14 @@ export default function Casino() {
                 <button
                   onClick={() => { setCoinMode('solo'); clearPvp(); }}
                   className={`px-6 py-2.5 rounded-2xl text-sm font-semibold transition active:scale-[0.985] ${coinMode === 'solo' ? 'text-white' : 'border'}`}
-                  style={coinMode === 'solo' ? { background: 'var(--brand-gradient)' } : { borderColor: 'var(--border)', background: 'var(--card)' }}
+                  style={coinMode === 'solo' ? { background: 'var(--brand)' } : { borderColor: 'var(--border)', background: 'var(--card)' }}
                 >
                   ⚡ Быстрая игра
                 </button>
                 <button
                   onClick={() => { setCoinMode('pvp'); setCoinResult(null); }}
                   className={`px-6 py-2.5 rounded-2xl text-sm font-semibold transition active:scale-[0.985] ${coinMode === 'pvp' ? 'text-white' : 'border'}`}
-                  style={coinMode === 'pvp' ? { background: 'var(--brand-gradient)' } : { borderColor: 'var(--border)', background: 'var(--card)' }}
+                  style={coinMode === 'pvp' ? { background: 'var(--brand)' } : { borderColor: 'var(--border)', background: 'var(--card)' }}
                 >
                   ⚔️ Онлайн дуэли (PvP)
                 </button>
@@ -2440,7 +2440,7 @@ export default function Casino() {
                       }}
                       disabled={coinFlipping || bet < MIN_BET}
                       className="w-full py-4 rounded-2xl text-white font-bold text-lg active:scale-[0.985] disabled:opacity-60 shadow"
-                      style={{ background: 'var(--brand-gradient)' }}
+                      style={{ background: 'var(--brand)' }}
                     >
                       {coinFlipping ? 'ПОДБРАСЫВАЕМ...' : `ПОДБРОСИТЬ • ${fmt(bet)} ${CURRENCY}`}
                     </button>
@@ -2496,7 +2496,7 @@ export default function Casino() {
                             doReplay();
                           }}
                           className="px-6 py-2 rounded-2xl text-sm font-semibold active:scale-[0.985] text-white"
-                          style={{ background: 'var(--brand-gradient)' }}
+                          style={{ background: 'var(--brand)' }}
                         >
                           🔄 Сыграть ещё ({fmt(bet)})
                         </button>
@@ -2553,7 +2553,7 @@ export default function Casino() {
                           }}
                           disabled={bet < MIN_BET}
                           className="w-full py-3.5 rounded-2xl font-bold text-lg active:scale-[0.985] disabled:opacity-60"
-                          style={{ background: 'var(--brand-gradient)' }}
+                          style={{ background: 'var(--brand)' }}
                         >
                           СОЗДАТЬ КОМНАТУ • {fmt(bet)} {CURRENCY}
                         </button>
@@ -2585,7 +2585,7 @@ export default function Casino() {
                               } catch (e: any) { alert(e.message); }
                             }}
                             className="px-6 rounded-2xl font-semibold active:scale-[0.985]"
-                            style={{ background: 'var(--brand-gradient)', color: 'white' }}
+                            style={{ background: 'var(--brand)', color: 'white' }}
                           >
                             ВОЙТИ
                           </button>
@@ -3047,7 +3047,7 @@ export default function Casino() {
                 }}
                 disabled={spinningSlots}
                 className="w-full py-3.5 rounded-2xl text-white font-bold text-base active:scale-[0.985] disabled:opacity-70"
-                style={{ background: 'var(--brand-gradient)' }}
+                style={{ background: 'var(--brand)' }}
               >
                 {spinningSlots ? 'КРУТИМ...' : `КРУТИТЬ СЛОТЫ • ${fmt(bet)}`}
               </button>
@@ -3163,7 +3163,7 @@ export default function Casino() {
                   }}
                   disabled={diceRolling}
                   className="w-full py-3.5 rounded-2xl text-white font-bold text-base active:scale-[0.985] disabled:opacity-70"
-                  style={{background: 'var(--brand-gradient)'}}
+                  style={{background: 'var(--brand)'}}
                 >
                   {diceRolling ? 'БРОСАЕМ...' : `БРОСИТЬ КУБИКИ • ${fmt(bet)}`}
                 </button>
@@ -3314,7 +3314,7 @@ export default function Casino() {
                 }}
                 disabled={rouletteSpinning}
                 className="mt-5 w-full py-3.5 rounded-2xl text-white font-bold text-lg active:scale-[0.985] disabled:opacity-70"
-                style={{background: 'var(--brand-gradient)'}}
+                style={{background: 'var(--brand)'}}
               >
                 {rouletteSpinning ? 'КРУТИМ...' : `КРУТИТЬ РУЛЕТКУ • ${fmt(bet)}`}
               </button>
@@ -3330,14 +3330,14 @@ export default function Casino() {
             <button
               onClick={() => { setHubView('economy'); setActiveTab(null as any); }}
               className={`flex-1 py-3 rounded-2xl text-lg font-semibold transition ${hubView === 'economy' ? 'text-white' : 'border'}`}
-              style={hubView === 'economy' ? { background: 'var(--brand-gradient)' } : { backgroundColor: 'var(--card)' }}
+              style={hubView === 'economy' ? { background: 'var(--brand)' } : { backgroundColor: 'var(--card)' }}
             >
               💰 Экономика
             </button>
             <button
               onClick={() => setHubView('games')}
               className={`flex-1 py-3 rounded-2xl text-lg font-semibold transition ${hubView === 'games' ? 'text-white' : 'border'}`}
-              style={hubView === 'games' ? { background: 'var(--brand-gradient)' } : { backgroundColor: 'var(--card)' }}
+              style={hubView === 'games' ? { background: 'var(--brand)' } : { backgroundColor: 'var(--card)' }}
             >
               🎰 Игры
             </button>
@@ -4611,7 +4611,7 @@ function GameCard({ title, desc, onPlay, extra }: { title: string; desc: string;
       <div className="font-semibold text-lg">{title}</div>
       <div className="text-sm text-slate-500 flex-1 mt-1">{desc}</div>
       {extra}
-      <button onClick={onPlay} className="mt-3 w-full py-3 rounded-2xl text-white font-medium active:brightness-95" style={{ background: 'var(--brand-gradient)' }}>ИГРАТЬ</button>
+      <button onClick={onPlay} className="mt-3 w-full py-3 rounded-2xl text-white font-medium active:brightness-95" style={{ background: 'var(--brand)' }}>ИГРАТЬ</button>
     </div>
   );
 }
