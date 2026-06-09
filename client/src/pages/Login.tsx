@@ -31,10 +31,10 @@ export default function Login() {
   return (
     <div className="min-h-screen auth-container flex items-center justify-center px-4">
       <div className="w-full max-w-md">
-        {/* Logo - custom (light/dark) */}
+        {/* Logo - simple letter "Б" only, no text */}
         <div className="text-center mb-8">
           <div className="flex justify-center mb-3">
-            <Logo variant="full" className="h-14 w-auto" />
+            <Logo variant="icon" className="h-16 w-16" />
           </div>
           <p className="text-slate-500 text-sm">Вход</p>
         </div>

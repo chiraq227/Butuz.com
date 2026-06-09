@@ -57,7 +57,7 @@ export default function Register() {
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <div className="flex justify-center mb-3">
-            <Logo variant="full" className="h-14 w-auto" />
+            <Logo variant="icon" className="h-16 w-16" />
           </div>
           <p className="text-slate-500 text-sm">Регистрация</p>
         </div>
