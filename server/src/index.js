@@ -12,6 +12,7 @@ import postsRoutes from './routes/posts.js';
 import usersRoutes from './routes/users.js';
 import messagesRoutes from './routes/messages.js';
 import casinoRoutes from './routes/casino.js';
+import { optionalAuthMiddleware } from './middleware/authMiddleware.js';
 
 dotenv.config();
 
@@ -104,18 +105,23 @@ if (isProd) {
 }
 
 // Simple in-memory rate limiter (no extra deps) to protect auth and sensitive actions.
+// Uses user ID when authenticated (better UX than pure IP), falls back to IP.
 // Includes periodic cleanup to prevent memory leak over long beta runs.
 const rateLimitStore = new Map();
 
 function createRateLimiter(windowMs, max, message = 'Too many attempts, please try again later.') {
   return (req, res, next) => {
+    // Prefer authenticated user ID so different users behind the same IP (NAT, family, office WiFi) don't share the limit
+    const userKey = req.user?.id ? `user:${req.user.id}` : null;
     const ip = req.ip || req.connection?.remoteAddress || req.socket?.remoteAddress || 'unknown';
+    const key = userKey || `ip:${ip}`;
+
     const now = Date.now();
-    let entry = rateLimitStore.get(ip);
+    let entry = rateLimitStore.get(key);
 
     if (!entry || now - entry.start > windowMs) {
       entry = { start: now, count: 0 };
-      rateLimitStore.set(ip, entry);
+      rateLimitStore.set(key, entry);
     }
 
     entry.count += 1;
@@ -139,28 +145,61 @@ setInterval(() => {
 }, 5 * 60 * 1000);
 
 const authLimiter = createRateLimiter(15 * 60 * 1000, 20);
-const sensitiveLimiter = createRateLimiter(60 * 1000, 60, 'Too many requests, slow down.');
-const writeActionLimiter = createRateLimiter(60 * 1000, 30, 'Too many actions, please slow down.');
+const sensitiveLimiter = createRateLimiter(60 * 1000, 80, 'Too many requests, slow down.');
+
+// Tiered write limiters for better UX during normal active use.
+// These numbers are intentionally generous for a social + casino site.
+// Light actions (likes, comments, bookmarks, follows) have high limits.
+const lightActionLimiter     = createRateLimiter(60 * 1000, 180, 'Too many actions, please slow down.');
+const contentCreationLimiter = createRateLimiter(60 * 1000, 25,  'Too many actions, please slow down.'); // new posts
+const messageLimiter         = createRateLimiter(60 * 1000, 90,  'Too many messages, please slow down.');
+const profileUpdateLimiter   = createRateLimiter(60 * 1000, 20,  'Too many actions, please slow down.'); // profile edits, theme etc.
 
 app.use('/api/auth/login', authLimiter);
 app.use('/api/auth/register', authLimiter);
 app.use('/api/casino', sensitiveLimiter);
 app.use('/api/admin', sensitiveLimiter);
 
-// Protect write-heavy / abuse-prone endpoints (beta spam / DoS mitigation)
+// Make user identity available to rate limiters (so we can limit per-user instead of just per-IP)
+app.use('/api/posts', optionalAuthMiddleware);
+app.use('/api/messages', optionalAuthMiddleware);
+app.use('/api/users', optionalAuthMiddleware);
+
+// Granular rate limiting so normal active usage (liking, commenting, chatting) doesn't get blocked easily
+// Light actions (like, comment, bookmark, follow)
 app.use('/api/posts', (req, res, next) => {
-  if (req.method === 'POST') return writeActionLimiter(req, res, next);
-  next();
-});
-app.use('/api/messages', (req, res, next) => {
-  if (req.method === 'POST') return writeActionLimiter(req, res, next);
-  next();
-});
-// Follow/unfollow + profile updates (prefix match works reliably)
-app.use('/api/users', (req, res, next) => {
-  if (['POST', 'PUT', 'DELETE'].includes(req.method) && req.path.includes('/follow') || req.method === 'PUT') {
-    return writeActionLimiter(req, res, next);
+  if (req.method === 'POST') {
+    const p = req.path || '';
+    if (p.includes('/like') || p.includes('/bookmark') || p.includes('/comments') || p.includes('/pin')) {
+      return lightActionLimiter(req, res, next);
+    }
+    // Creating a new post is heavier
+    return contentCreationLimiter(req, res, next);
   }
+  next();
+});
+
+app.use('/api/messages', (req, res, next) => {
+  if (req.method === 'POST') {
+    return messageLimiter(req, res, next);
+  }
+  next();
+});
+
+// Profile updates (PUT /api/users/me) and follow actions are limited more strictly
+app.use('/api/users', (req, res, next) => {
+  const method = req.method;
+  const p = req.path || '';
+
+  if (method === 'PUT') {
+    // Profile edits, theme, hide balance etc.
+    return profileUpdateLimiter(req, res, next);
+  }
+
+  if (['POST', 'DELETE'].includes(method) && p.includes('/follow')) {
+    return lightActionLimiter(req, res, next);
+  }
+
   next();
 });
 
