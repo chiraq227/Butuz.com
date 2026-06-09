@@ -1643,59 +1643,59 @@ export default function Casino() {
   // ====================== ALWAYS VISIBLE BALANCE HEADER (fully respects profile theme, including dark) ======================
   const BalanceHeader = () => (
     <div 
-      className="sticky top-16 z-[60] backdrop-blur border-b mb-4 -mx-1 px-4 py-3 flex items-center justify-between rounded-b-2xl shadow-sm"
+      className="sticky top-16 z-[60] backdrop-blur border-b mb-3 px-3 sm:px-4 py-2.5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-y-1.5 gap-x-2 rounded-b-2xl shadow-sm overflow-x-hidden"
       style={{ 
         backgroundColor: 'color-mix(in srgb, var(--card) 100%, transparent)',
         borderColor: 'var(--border)'
       }}
     >
-      <div className="flex items-center gap-3">
-        <div className="flex items-center gap-2">
-         {/* Theme-aware icon background using the same gradient as the main logo */}
+      {/* Left: Logo + Title + Level */}
+      <div className="flex items-center gap-2 min-w-0 flex-1">
+        <div className="flex items-center gap-2 flex-shrink-0">
           <div 
-            className="w-9 h-9 rounded-xl flex items-center justify-center" 
+            className="w-8 h-8 rounded-xl flex items-center justify-center" 
             style={{ background: 'var(--brand-gradient)' }}
           >
-            <Coins className="w-5 h-5 text-white" />
+            <Coins className="w-4 h-4 text-white" />
           </div>
-          <div>
-            <span className="font-bold text-xl logo-gradient">Бутуз Казино</span>
+          <div className="min-w-0">
+            <span className="font-bold text-base sm:text-lg logo-gradient leading-none">Бутуз Казино</span>
             {currentGame && (
               <span 
-                className="ml-2 text-sm px-2 py-0.5 rounded"
+                className="ml-1.5 text-[10px] px-1.5 py-0.5 rounded align-middle"
                 style={{ backgroundColor: 'var(--hover-bg)', color: 'var(--text-secondary)' }}
               >
-                / {currentGame.toUpperCase()}
+                {currentGame.toUpperCase()}
               </span>
             )}
           </div>
         </div>
         {profile && (
           <div 
-            className="text-xs px-2 py-0.5 rounded"
+            className="text-[10px] px-1.5 py-0.5 rounded flex-shrink-0"
             style={{ backgroundColor: 'var(--hover-bg)', color: 'var(--text-secondary)' }}
           >
-            Ур.{profile.level} {profile.vip ? '👑VIP' : ''}
+            Ур.{profile.level} {profile.vip ? '👑' : ''}
           </div>
         )}
       </div>
 
-      <div className="flex items-center gap-4">
-        <div className="text-right">
-          <div className="text-[10px] tracking-widest" style={{ color: 'var(--text-muted)' }}>БАЛАНС КАЗИНО</div>
-         {/* Use theme brand color for the balance number */}
+      {/* Right: Balance + Actions */}
+      <div className="flex items-center gap-2 sm:gap-3 w-full sm:w-auto">
+        <div className="flex-1 sm:flex-none text-right min-w-0">
+          <div className="text-[9px] tracking-widest leading-none" style={{ color: 'var(--text-muted)' }}>БАЛАНС</div>
           <div 
-            className="font-mono text-lg sm:text-xl md:text-2xl font-semibold tabular-nums leading-none"
+            className="font-mono text-base sm:text-lg font-semibold tabular-nums leading-none truncate"
             style={{ color: 'var(--brand-500)' }}
           >
-            {fmt(bal)} <span className="text-xs sm:text-sm align-super">{CURRENCY}</span>
+            {fmt(bal)} <span className="text-[10px] align-super">{CURRENCY}</span>
           </div>
         </div>
 
-        <div className="flex gap-2">
+        <div className="flex gap-1.5 flex-shrink-0">
           <button
             onClick={refreshProfile}
-            className="text-xs px-3 py-1.5 border rounded-2xl transition-colors hover:brightness-95 active:brightness-90"
+            className="text-[10px] px-2.5 py-1 border rounded-xl transition-colors hover:brightness-95 active:brightness-90 whitespace-nowrap"
             style={{ 
               borderColor: 'var(--border)',
               backgroundColor: 'var(--card)',
@@ -1716,7 +1716,7 @@ export default function Casino() {
                 alert(e.message || 'Бонус уже получен');
               }
             }}
-            className="text-xs px-3 py-1.5 rounded-2xl"
+            className="text-[10px] px-2.5 py-1 rounded-xl whitespace-nowrap"
             style={{ 
               backgroundColor: 'color-mix(in srgb, #10b981 15%, var(--card))',
               color: '#166534'
@@ -1778,13 +1778,13 @@ export default function Casino() {
                   c.set({ y: 0 });
                 });
               }}
-              className="text-xs px-3 py-1.5 border rounded-2xl"
+              className="text-[10px] px-2 py-1 border rounded-xl whitespace-nowrap"
               style={{ 
                 borderColor: 'color-mix(in srgb, #ef4444 30%, var(--border))',
                 color: '#b91c1c'
               }}
             >
-              ← В лобби
+              ← Лобби
             </button>
           )}
         </div>
