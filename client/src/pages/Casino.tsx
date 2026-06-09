@@ -1799,7 +1799,7 @@ export default function Casino() {
      {/* Bet selector - only for actual games, not economy pages. Hide for active coin pvp room (bet is locked). */}
       {['slots', 'mines', 'blackjack', 'dice', 'roulette', 'coin', 'plinko'].includes(currentGame) &&
         !(currentGame === 'coin' && coinMode === 'pvp' && currentRoom) && (
-        <div className="bg-white border rounded-3xl p-4 mb-6 mt-2 flex flex-wrap items-center gap-3" style={{ backgroundColor: 'var(--card)', borderColor: 'var(--border)' }}>
+        <div className="bg-white border rounded-3xl p-4 mb-6 mt-2 sm:mt-20 flex flex-wrap items-center gap-3" style={{ backgroundColor: 'var(--card)', borderColor: 'var(--border)' }}>
           <div className="font-medium mr-2">Ставка:</div>
           <div className="flex gap-2 flex-wrap">
             {QUICK_BETS.map(q => (
@@ -1834,7 +1834,7 @@ export default function Casino() {
 
      {/* Dedicated game views or hub — mobile safe */}
       {currentGame ? (
-        <div className="pb-8 w-full max-w-full overflow-x-hidden pt-4 sm:pt-2">
+        <div className="pb-8 w-full max-w-full overflow-x-hidden pt-4 sm:pt-20">
           {currentGame && !['slots', 'mines', 'blackjack', 'dice', 'roulette', 'coin', 'plinko'].includes(currentGame) && (
             <div className="w-full max-w-md mx-auto text-center py-12">
               <div className="text-7xl mb-4">🚧</div>
@@ -3302,9 +3302,9 @@ export default function Casino() {
         </div>
       ) : (
         /* HUB */
-        <div className="w-full max-w-full overflow-x-hidden pt-4 sm:pt-16">
+        <div className="w-full max-w-full overflow-x-hidden pt-4 sm:pt-20">
          {/* Top level tabs: Economy vs Games (games not always on screen) */}
-          <div className="flex gap-2 mb-6 mt-2 sm:mt-0">
+          <div className="flex gap-2 mb-6 mt-2 sm:mt-4">
             <button
               onClick={() => { setHubView('economy'); setActiveTab(null as any); }}
               className={`flex-1 py-3 rounded-2xl text-lg font-semibold transition ${hubView === 'economy' ? 'text-white' : 'border'}`}
