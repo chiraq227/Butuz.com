@@ -1,0 +1,219 @@
+{
+  "920149580": {
+    "balance": 500000000000000000000000000,
+    "total_won": 302107229391441,
+    "total_lost": 100000000000000000000350678211874496,
+    "games_played": 148,
+    "level": 1000,
+    "xp": 10000000000000000000065278544133,
+    "daily_last": "2026-06-08T14:40:24.915125",
+    "referral_by": null,
+    "referrals": [],
+    "achievements": [],
+    "vip": true,
+    "banned": false,
+    "joined": "2026-05-30T16:58:37.198044",
+    "streak": 1,
+    "last_game": null,
+    "username": "@iLifeloverr",
+    "game_id": 1,
+    "married_to": 8850923411,
+    "married_at": "2026-06-08T14:34:47.348905",
+    "mining": {
+      "farm_level": 10,
+      "btc_accumulated": 0.0,
+      "last_collected": "2026-06-08T16:37:59.258202",
+      "extra_farms": 1000
+    },
+    "bank_balance": 0,
+    "transfers": {
+      "count": 0,
+      "date": ""
+    },
+    "rating": 0,
+    "businesses": {
+      "10": {
+        "bought_at": "2026-06-08T16:00:55.373604",
+        "task_print_last": "2026-06-08T16:01:19.258264",
+        "task_sanction_last": "2026-06-08T16:01:24.746051",
+        "task_summit_last": "2026-06-08T16:01:28.678999"
+      },
+      "9": {
+        "bought_at": "2026-06-08T16:01:36.870476",
+        "task_merge_last": "2026-06-08T16:01:38.212378",
+        "task_lobby_last": "2026-06-08T16:01:39.841434",
+        "task_monopoly_last": "2026-06-08T16:01:41.710880"
+      },
+      "8": {
+        "bought_at": "2026-06-08T16:01:50.192447",
+        "task_mars_last": "2026-06-08T16:01:53.286753",
+        "task_satellite_last": "2026-06-08T16:01:54.460817",
+        "task_engine_last": "2026-06-08T16:01:56.631738"
+      },
+      "7": {
+        "bought_at": "2026-06-08T16:02:07.400279",
+        "task_export_last": "2026-06-08T16:02:11.755942",
+        "task_ecology_last": "2026-06-08T16:02:14.039436",
+        "task_drill_last": "2026-06-08T16:02:15.352183"
+      },
+      "6": {
+        "bought_at": "2026-06-08T16:14:34.903285",
+        "task_trucks_last": "2026-06-08T16:14:36.921738",
+        "task_customs_last": "2026-06-08T16:14:37.494331",
+        "task_route_last": "2026-06-08T16:14:40.319331"
+      },
+      "5": {
+        "bought_at": "2026-06-08T16:14:46.316026"
+      },
+      "4": {
+        "bought_at": "2026-06-08T16:14:50.443731"
+      },
+      "3": {
+        "bought_at": "2026-06-08T16:14:54.471255"
+      },
+      "2": {
+        "bought_at": "2026-06-08T16:14:58.347038"
+      },
+      "1": {
+        "bought_at": "2026-06-08T16:15:01.617767"
+      }
+    },
+    "last_bet": 1395475672,
+    "nicknames": [
+      "potroshitel22867",
+      "VitalikIgnatyuk"
+    ]
+  },
+  "8850923411": {
+    "balance": 337127029858,
+    "total_won": 1006676600,
+    "total_lost": 50000000000000001006777801,
+    "games_played": 55,
+    "level": 1000,
+    "xp": 5000000000000000201368,
+    "daily_last": "2026-06-08T14:33:21.013020",
+    "referral_by": null,
+    "referrals": [],
+    "achievements": [],
+    "vip": true,
+    "banned": false,
+    "joined": "2026-05-30T16:58:41.455250",
+    "streak": 1,
+    "last_game": null,
+    "username": "python💳",
+    "game_id": 2,
+    "married_to": 920149580,
+    "married_at": "2026-06-08T14:34:47.348905",
+    "mining": {
+      "farm_level": 10,
+      "btc_accumulated": 0.0,
+      "last_collected": "2026-06-09T12:30:22.292734",
+      "extra_farms": 1000
+    },
+    "bank_balance": 0,
+    "transfers": {
+      "count": 0,
+      "date": ""
+    },
+    "rating": 41193090,
+    "businesses": {
+      "1": {
+        "bought_at": "2026-06-08T15:47:02.178288"
+      },
+      "2": {
+        "bought_at": "2026-06-08T15:47:05.678257"
+      },
+      "3": {
+        "bought_at": "2026-06-08T15:50:54.849684"
+      },
+      "4": {
+        "bought_at": "2026-06-08T15:51:00.131239"
+      },
+      "5": {
+        "bought_at": "2026-06-08T15:51:01.934615"
+      },
+      "6": {
+        "bought_at": "2026-06-08T15:51:03.110523"
+      },
+      "7": {
+        "bought_at": "2026-06-08T15:51:04.163443"
+      },
+      "8": {
+        "bought_at": "2026-06-08T15:51:05.091185"
+      },
+      "9": {
+        "bought_at": "2026-06-08T15:51:06.116894"
+      },
+      "10": {
+        "bought_at": "2026-06-08T15:51:07.952206"
+      }
+    },
+    "last_bet": 1000,
+    "nicknames": [
+      "butuz",
+      "python"
+    ]
+  },
+  "nickname_registry": {
+    "butuz": {
+      "owner": 8850923411,
+      "name": "butuz"
+    },
+    "python": {
+      "owner": 8850923411,
+      "name": "python"
+    },
+    "koresh": 8850923411,
+    "potroshitel22867": {
+      "owner": 920149580,
+      "name": "potroshitel22867"
+    },
+    "vitalikignatyuk": {
+      "owner": 920149580,
+      "name": "VitalikIgnatyuk"
+    }
+  },
+  "850642783": {
+    "balance": 5000000000001000000,
+    "total_won": 0,
+    "total_lost": 100000000,
+    "games_played": 2,
+    "level": 2,
+    "xp": 10001,
+    "daily_last": "2026-06-08T16:27:09.458455",
+    "referral_by": null,
+    "referrals": [],
+    "achievements": [],
+    "vip": true,
+    "banned": false,
+    "joined": "2026-06-08T16:26:53.844935",
+    "streak": 1,
+    "last_game": null,
+    "username": "@emolover",
+    "game_id": 3,
+    "married_to": null,
+    "married_at": null,
+    "mining": {
+      "farm_level": 0,
+      "btc_accumulated": 0.0,
+      "last_collected": null,
+      "extra_farms": 0
+    },
+    "last_bet": 100000000,
+    "bank_balance": 0,
+    "transfers": {
+      "count": 0,
+      "date": ""
+    },
+    "rating": 0,
+    "businesses": {},
+    "nicknames": []
+  },
+  "nickname_market": {
+    "PavelDurov": {
+      "seller_id": 920149580,
+      "price": 1000000000000000000000000000000000000000000000000000000000000,
+      "listed_at": "2026-06-08T16:37:37.641970"
+    }
+  }
+}

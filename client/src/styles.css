@@ -1,0 +1,430 @@
+/* Бутуз Custom Styles */
+
+/* Gradient text for logo - uses theme var */
+.logo-gradient {
+  background: var(--brand-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Card styles */
+.post-card {
+  transition: transform 0.1s ease, box-shadow 0.1s ease;
+}
+
+.post-card:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px -2px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+}
+
+/* Like button animation */
+.like-button {
+  transition: transform 0.15s ease;
+}
+
+.like-button.liked {
+  color: #ef4444;
+}
+
+.like-button:hover {
+  transform: scale(1.1);
+}
+
+/* Auth forms */
+.auth-container {
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+}
+
+/* Modern input styles */
+.input {
+  transition: all 0.2s ease;
+  border-radius: 1rem; /* rounded-2xl - consistent rounding for all input fields */
+}
+
+.input:focus {
+  outline: none;
+  border-color: #6366f1;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+/* Button primary - base, overridden by theme variables */
+.btn-primary {
+  background: var(--brand-gradient);
+  transition: all 0.2s ease;
+}
+
+.btn-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px -2px rgb(0 0 0 / 0.2);
+}
+
+.btn-primary:active {
+  transform: translateY(0);
+}
+
+/* Sidebar active link - base for light, overridden by theme */
+.sidebar-link.active {
+  background-color: color-mix(in srgb, var(--brand-500) 12%, #f0f4ff);
+  color: var(--brand-500);
+  font-weight: 600;
+}
+
+/* ============================================
+   THEME SYSTEM — only light (default) and dark
+   Applied via data-theme on <html>
+   ============================================ */
+
+:root {
+  --brand-500: #6366f1;
+  --brand-600: #4f46e5;
+  --brand-700: #4338ca;
+  --brand-accent: #a855f7;
+  --brand-gradient: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+}
+
+/* Single dark theme brand colors */
+[data-theme="dark"] {
+  --brand-500: #818cf8;
+  --brand-600: #6366f1;
+  --brand-700: #4f46e5;
+  --brand-accent: #c084fc;
+  --brand-gradient: linear-gradient(135deg, #818cf8 0%, #c084fc 100%);
+}
+
+/* Brand elements using CSS vars */
+.btn-primary {
+  background: var(--brand-gradient);
+  transition: all 0.2s ease;
+}
+
+.btn-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px -2px rgb(0 0 0 / 0.2);
+}
+
+.logo-gradient {
+  background: var(--brand-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Sidebar active uses brand — respects current profile theme */
+.sidebar-link.active {
+  background-color: color-mix(in srgb, var(--brand-500) 14%, var(--card, #ffffff));
+  color: var(--brand-500);
+  font-weight: 600;
+  border: 1px solid color-mix(in srgb, var(--brand-500) 25%, transparent);
+}
+
+/* Like accent can stay red, but hover can follow brand a bit */
+.like-button:hover {
+  color: var(--brand-500);
+}
+
+.like-button.liked {
+  color: #ef4444;
+}
+
+/* Search / inputs accent ring */
+.input:focus {
+  border-color: var(--brand-500);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--brand-500) 12%, transparent);
+}
+
+/* Legacy theme-swatch (kept for compatibility, new picker uses emoji + small gradient dot) */
+.theme-swatch {
+  width: 42px;
+  height: 42px;
+  border-radius: 9999px;
+  border: 3px solid #fff;
+  box-shadow: 0 1px 3px rgb(0 0 0 / 0.1), inset 0 0 0 1px rgb(0 0 0 / 0.05);
+  cursor: pointer;
+  transition: transform 0.1s ease, box-shadow 0.1s ease;
+}
+.theme-swatch:hover {
+  transform: scale(1.08);
+  box-shadow: 0 2px 8px rgb(0 0 0 / 0.15);
+}
+.theme-swatch.active {
+  border-color: #111827;
+  box-shadow: 0 0 0 2px var(--brand-500), 0 2px 8px rgb(0 0 0 / 0.15);
+}
+
+/* (Dark surface overrides are defined earlier near the top for clarity) */
+
+/* Base background using CSS var - this is the source of truth.
+   Combined with direct style setting in ThemeContext for reliable live switching. */
+body,
+.min-h-screen {
+  background-color: var(--bg);
+  -webkit-tap-highlight-color: transparent;
+  overflow-x: hidden; /* prevent accidental horizontal scroll on mobile */
+}
+
+/* Better iOS input behavior - prevent unwanted zoom on focus for small text */
+input, textarea, select {
+  font-size: 16px; /* >=16px prevents iOS auto-zoom */
+}
+@media (min-width: 640px) {
+  input, textarea, select {
+    font-size: inherit;
+  }
+}
+
+/* Mobile optimizations - better touch, safe areas */
+button, 
+.sidebar-link, 
+a, 
+[role="button"],
+input[type="button"],
+input[type="submit"] {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+@media (max-width: 640px) {
+  .sidebar-link {
+    padding-top: 0.625rem;
+    padding-bottom: 0.625rem;
+  }
+}
+
+/* Safe areas for notched phones (iPhone etc) */
+.safe-bottom {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+/* Dark mode surfaces */
+[data-theme^="dark"] {
+  --bg: #0f172a;
+  --card: #1e2937;
+  --text-primary: #f1f5f9;
+  --text-secondary: #cbd5e1;
+  --text-muted: #94a3b8;
+  --border: #334155;
+  --input-bg: #1e2937;
+  --hover-bg: #334155;
+  --sidebar-bg: #1e2937;
+
+  color-scheme: dark;
+}
+
+/* ======================================================
+   ADMIN PANEL — high-contrast controls that work in ANY theme
+   Buttons carry their own solid dark background + white text.
+   Never rely on --card tints or light-only Tailwind colors here.
+====================================================== */
+.admin-surface {
+  background: #0b0f17;
+  border-color: rgba(255,255,255,0.08);
+  color: #fff;
+}
+.admin-btn {
+  @apply inline-flex items-center justify-center gap-1 px-3 py-1.5 rounded-2xl text-sm font-semibold border transition active:scale-[0.985] select-none;
+  background: #111827;
+  color: #fff;
+  border-color: #334155;
+}
+.admin-btn:hover { background: #1f2937; }
+.admin-btn-success { background:#059669; border-color:#047857; }
+.admin-btn-success:hover { background:#10b981; }
+.admin-btn-danger { background:#b91c1c; border-color:#991b1b; }
+.admin-btn-danger:hover { background:#dc2626; }
+.admin-btn-warn { background:#b45309; border-color:#92400e; }
+.admin-btn-warn:hover { background:#d97706; }
+.admin-btn-subtle { background: rgba(255,255,255,0.06); color:#f1f5f9; border-color: rgba(255,255,255,0.12); }
+.admin-btn-subtle:hover { background: rgba(255,255,255,0.1); }
+
+/* Dark theme full site overrides - changes cards, text, borders, nav, sidebar, inputs etc. */
+[data-theme^="dark"] .bg-white,
+[data-theme^="dark"] .post-card,
+[data-theme^="dark"] .bg-slate-50,
+[data-theme^="dark"] nav,
+[data-theme^="dark"] .sidebar-left {
+  background-color: var(--card) !important;
+  border-color: var(--border) !important;
+  color: var(--text-primary);
+}
+
+[data-theme^="dark"] .border-slate-200,
+[data-theme^="dark"] .border-slate-100,
+[data-theme^="dark"] .border-r,
+[data-theme^="dark"] .border-b {
+  border-color: var(--border) !important;
+}
+
+[data-theme^="dark"] .text-slate-900,
+[data-theme^="dark"] .text-slate-800,
+[data-theme^="dark"] .text-slate-700,
+[data-theme^="dark"] .text-slate-600 {
+  color: var(--text-primary) !important;
+}
+
+[data-theme^="dark"] .text-slate-500,
+[data-theme^="dark"] .text-slate-400,
+[data-theme^="dark"] .text-slate-300 {
+  color: var(--text-muted) !important;
+}
+
+[data-theme^="dark"] .sidebar-link {
+  color: var(--text-secondary);
+}
+
+[data-theme^="dark"] .sidebar-link:hover {
+  background-color: var(--hover-bg) !important;
+}
+
+[data-theme^="dark"] .sidebar-link.active {
+  background-color: color-mix(in srgb, var(--brand-500) 22%, var(--card)) !important;
+  color: var(--brand-500) !important;
+  border: 1px solid color-mix(in srgb, var(--brand-500) 35%, transparent) !important;
+}
+
+[data-theme^="dark"] .input,
+[data-theme^="dark"] input,
+[data-theme^="dark"] textarea,
+[data-theme^="dark"] .bg-slate-100 {
+  background-color: var(--input-bg) !important;
+  border-color: var(--border) !important;
+  color: var(--text-primary) !important;
+}
+
+[data-theme^="dark"] .hover\:bg-slate-100:hover,
+[data-theme^="dark"] .hover\:bg-slate-50:hover {
+  background-color: var(--hover-bg) !important;
+}
+
+[data-theme^="dark"] .auth-container {
+  background: linear-gradient(135deg, #0f172a 0%, #1e2937 100%);
+}
+
+/* ============================================
+   MESSAGES PAGE — full screen chat theming + fixes
+   ============================================ */
+
+/* Make sure the messages page root and panels follow theme surfaces */
+.messages-page,
+.messages-page.bg-slate-50 {
+  background-color: var(--bg) !important;
+}
+.messages-page .bg-white,
+.messages-page .messages-chat-area {
+  background-color: var(--card) !important;
+}
+.messages-page .bg-slate-50 {
+  background-color: var(--bg) !important;
+}
+.messages-page .border-slate-100,
+.messages-page .border-slate-200,
+.messages-page .border-b,
+.messages-page .border-r {
+  border-color: var(--border) !important;
+}
+
+/* Mode tabs (Обычные / Секретные) */
+.messages-page .messages-mode-tab.is-active {
+  background-color: var(--card) !important;
+  color: var(--text-primary) !important;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+[data-theme^="dark"] .messages-page .messages-mode-tab.is-active {
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+}
+
+/* Conversation list — selected chat row (the main bug: white highlight + invisible text) */
+.messages-page .conversation-item.is-active {
+  background-color: color-mix(in srgb, var(--brand-500) 10%, var(--card)) !important;
+}
+[data-theme^="dark"] .messages-page .conversation-item.is-active {
+  background-color: color-mix(in srgb, var(--brand-500) 22%, var(--card)) !important;
+}
+/* Make the text in selected row use brand accent (like old sidebar) so it's visible and nice */
+.messages-page .conversation-item.is-active .font-medium {
+  color: var(--brand-500) !important;
+}
+.messages-page .conversation-item.is-active .text-slate-500 {
+  color: color-mix(in srgb, var(--brand-500) 65%, var(--text-muted)) !important;
+}
+
+/* Chat bubbles — ensure received messages are readable in dark */
+[data-theme^="dark"] .messages-page .message-bubble:not(.bg-indigo-600) {
+  background-color: var(--card) !important;
+  border-color: var(--border) !important;
+  color: var(--text-primary) !important;
+}
+
+/* Composer / input area inside messages */
+.messages-page .border-t.bg-white {
+  background-color: var(--card) !important;
+  border-color: var(--border) !important;
+}
+.messages-page input {
+  background-color: var(--input-bg) !important;
+  border-color: var(--border) !important;
+  color: var(--text-primary) !important;
+}
+
+/* ============================================
+   LIGHT THEME RESET
+   Force light surfaces when NOT in a dark theme.
+   This ensures switching back from dark to light properly resets everything.
+   ============================================ */
+[data-theme]:not([data-theme^="dark"]) .min-h-screen,
+[data-theme]:not([data-theme^="dark"]) body {
+  background-color: var(--bg) !important;
+}
+
+[data-theme]:not([data-theme^="dark"]) .bg-white,
+[data-theme]:not([data-theme^="dark"]) .post-card,
+[data-theme]:not([data-theme^="dark"]) .bg-slate-50 {
+  background-color: var(--card) !important;
+  border-color: var(--border) !important;
+  color: var(--text-primary);
+}
+
+[data-theme]:not([data-theme^="dark"]) .text-slate-900,
+[data-theme]:not([data-theme^="dark"]) .text-slate-800,
+[data-theme]:not([data-theme^="dark"]) .text-slate-700 {
+  color: var(--text-primary) !important;
+}
+
+[data-theme]:not([data-theme^="dark"]) .text-slate-500,
+[data-theme]:not([data-theme^="dark"]) .text-slate-400,
+[data-theme]:not([data-theme^="dark"]) .text-slate-600 {
+  color: var(--text-muted) !important;
+}
+
+[data-theme]:not([data-theme^="dark"]) .sidebar-left {
+  background-color: var(--sidebar-bg) !important;
+  border-color: var(--border) !important;
+}
+
+[data-theme]:not([data-theme^="dark"]) .input,
+[data-theme]:not([data-theme^="dark"]) input,
+[data-theme]:not([data-theme^="dark"]) textarea {
+  background-color: var(--input-bg) !important;
+  border-color: var(--border) !important;
+  color: var(--text-primary) !important;
+}
+
+[data-theme]:not([data-theme^="dark"]) .bg-slate-100 {
+  background-color: var(--input-bg) !important;
+}
+
+[data-theme]:not([data-theme^="dark"]) .hover\:bg-slate-100:hover,
+[data-theme]:not([data-theme^="dark"]) .hover\:bg-slate-50:hover {
+  background-color: var(--hover-bg) !important;
+}
+
+/* Feed container */
+.feed-container {
+  max-width: 580px;
+  margin: 0 auto;
+}
+
+/* Responsive adjustments */
+@media (max-width: 1024px) {
+  .sidebar-left {
+    display: none;
+  }
+}
