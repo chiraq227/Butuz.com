@@ -5,8 +5,9 @@ from bot_instance import bot
 from core.database import get_user, save_user, load_db
 from core.utils import fmt, send_section_from_text, get_display_name
 from game_logic.levels import level_info, vip_badge
+from users.admin import is_admin
 
-def main_menu_keyboard() -> types.InlineKeyboardMarkup:
+def main_menu_keyboard(user_id: int | None = None) -> types.InlineKeyboardMarkup:
     kb = types.InlineKeyboardMarkup(row_width=2)
     kb.add(
         types.InlineKeyboardButton("🎰 СЛОТЫ", callback_data="game_slots"),
@@ -19,9 +20,10 @@ def main_menu_keyboard() -> types.InlineKeyboardMarkup:
     kb.add(
         types.InlineKeyboardButton("🎡 РУЛЕТКА", callback_data="game_roulette"),
     )
-    kb.add(
-        types.InlineKeyboardButton("🪙 МОНЕТКА", callback_data="game_coin"),
-    )
+    if user_id and is_admin(user_id):
+        kb.add(
+            types.InlineKeyboardButton("🪙 МОНЕТКА ⚠️", callback_data="game_coin"),
+        )
     kb.add(
         types.InlineKeyboardButton("👤 ПРОФИЛЬ", callback_data="profile"),
         types.InlineKeyboardButton("🏆 ТОП ИГРОКОВ", callback_data="leaderboard"),
@@ -59,8 +61,8 @@ def main_menu_text() -> str:
 
 
 # === Хелперы для отправки меню по тексту (централизованно) ===
-def send_main_menu(chat_id: int):
-    bot.send_message(chat_id, main_menu_text(), reply_markup=main_menu_keyboard())
+def send_main_menu(chat_id: int, user_id: int | None = None):
+    bot.send_message(chat_id, main_menu_text(), reply_markup=main_menu_keyboard(user_id))
 
 
 def send_profile(chat_id: int, user_id: int):
@@ -167,12 +169,12 @@ def start_handler(message):
                 )
         except Exception: pass
 
-    bot.send_message(message.chat.id, main_menu_text(), reply_markup=main_menu_keyboard())
+    bot.send_message(message.chat.id, main_menu_text(), reply_markup=main_menu_keyboard(message.from_user.id))
 
 @bot.message_handler(func=lambda msg: msg.text and msg.text.strip().lower() in ["меню", "menu", "назад", "back"])
 def menu_handler(message):
     if get_user(message.from_user.id).get("banned"): return
-    bot.send_message(message.chat.id, main_menu_text(), reply_markup=main_menu_keyboard())
+    bot.send_message(message.chat.id, main_menu_text(), reply_markup=main_menu_keyboard(message.from_user.id))
 
 @bot.message_handler(commands=["balance", "bal", "баланс"])
 def balance_command(message):
@@ -490,7 +492,7 @@ def help_handler(c):
 
 @bot.callback_query_handler(func=lambda c: c.data == "main_menu")
 def cb_main_menu(c):
-    try: bot.edit_message_text(main_menu_text(), c.message.chat.id, c.message.message_id, reply_markup=main_menu_keyboard())
+    try: bot.edit_message_text(main_menu_text(), c.message.chat.id, c.message.message_id, reply_markup=main_menu_keyboard(c.from_user.id))
     except: pass
 
 

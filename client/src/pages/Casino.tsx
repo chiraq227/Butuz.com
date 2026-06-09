@@ -1140,6 +1140,13 @@ export default function Casino() {
     }
   }, [currentGame, isButuz]);
 
+  // Safety: non-admins should never have Coin (solo + PvP, not ready yet) open
+  useEffect(() => {
+    if (currentGame === 'coin' && !isButuz) {
+      setCurrentGame(null);
+    }
+  }, [currentGame, isButuz]);
+
   // MINES
   async function startMines() {
     if (!token) return;
@@ -2329,12 +2336,13 @@ export default function Casino() {
           )}
 
           {/* ====================== МОНЕТКА — полностью переработанная, интуитивная + анимации + PvP комнаты ====================== */}
-          {currentGame === 'coin' && (
+          {currentGame === 'coin' && isButuz && (
             <div className="w-full max-w-[680px] mx-auto">
               {/* Header */}
               <div className="text-center mb-4">
                 <div className="text-7xl mb-1">🪙</div>
                 <div className="text-3xl font-bold tracking-tight">Монетка</div>
+                <div className="mt-1 inline-block px-2 py-0.5 rounded bg-red-600 text-white text-[10px] font-bold tracking-wider">НЕ ДОРАБОТАНО!</div>
                 <div className="text-sm opacity-60 mt-0.5">Классика. x2 при совпадении. Честный 50/50.</div>
               </div>
 
@@ -4248,7 +4256,16 @@ export default function Casino() {
             <button onClick={() => setCurrentGame('blackjack')} className="bg-white border rounded-3xl p-5 text-left hover:border-violet-300" style={{backgroundColor:'var(--card)'}}><div className="text-4xl">🃏</div><div className="font-semibold mt-2">Блэкджек</div></button>
             <button onClick={() => setCurrentGame('dice')} className="bg-white border rounded-3xl p-5 text-left" style={{backgroundColor:'var(--card)'}}><div className="text-4xl">🎲</div><div className="font-semibold mt-2">Кости</div></button>
             <button onClick={() => setCurrentGame('roulette')} className="bg-white border rounded-3xl p-5 text-left" style={{backgroundColor:'var(--card)'}}><div className="text-4xl">🎡</div><div className="font-semibold mt-2">Рулетка</div></button>
-            <button onClick={() => setCurrentGame('coin')} className="bg-white border rounded-3xl p-5 text-left" style={{backgroundColor:'var(--card)'}}><div className="text-4xl">🪙</div><div className="font-semibold mt-2">Монетка</div></button>
+            {isButuz && (
+              <button
+                onClick={() => setCurrentGame('coin')}
+                className="bg-white border rounded-3xl p-5 text-left hover:border-rose-300 relative"
+                style={{backgroundColor:'var(--card)'}}>
+                <div className="text-4xl">🪙</div>
+                <div className="font-semibold mt-2">Монетка</div>
+                <div className="absolute top-2 right-2 text-[9px] leading-none font-bold px-1.5 py-[1px] rounded bg-red-600 text-white tracking-wider">НЕ ДОРАБОТАНО!</div>
+              </button>
+            )}
           </div>
         </div>
       )}

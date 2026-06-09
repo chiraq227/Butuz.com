@@ -6,10 +6,15 @@ import bot_instance
 from core.database import get_user, save_user
 from users.user_management import update_balance
 from core.utils import fmt, get_display_name
+from users.admin import is_admin
 
 
 @bot.callback_query_handler(func=lambda c: c.data == "game_coin")
 def coin_menu(c):
+    user_id = c.from_user.id
+    if not is_admin(user_id):
+        bot.answer_callback_query(c.id, "⚠️ Монетка (включая PvP) пока отключена для обычных игроков.\nДоступна только админам: НЕ ДОРАБОТАНО!", show_alert=True)
+        return
     kb = types.InlineKeyboardMarkup(row_width=2)
     kb.add(
         types.InlineKeyboardButton("🪙 ОРЁЛ (x2)", callback_data="coin_choose_heads"),
@@ -18,7 +23,7 @@ def coin_menu(c):
     kb.add(types.InlineKeyboardButton("⚔️ МОНЕТКА PvP", callback_data="coin_pvp_menu"))
     kb.add(types.InlineKeyboardButton("◀️ Назад", callback_data="main_menu"))
     text = (
-        "🪙 <b>МОНЕТКА</b>\n\n"
+        "🪙 <b>МОНЕТКА</b>  ⚠️ НЕ ДОРАБОТАНО!\n\n"
         "Классическая игра на удачу!\n"
         "Выберите сторону — при совпадении выигрыш x2.\n\n"
         "Или вызовите друга на дуэль PvP."
@@ -40,6 +45,9 @@ def coin_choose_side(c):
 @bot.callback_query_handler(func=lambda c: c.data.startswith("play_coin_"))
 def play_coin(c):
     user_id = c.from_user.id
+    if not is_admin(user_id):
+        bot.answer_callback_query(c.id, "⚠️ Монетка пока отключена для обычных игроков (НЕ ДОРАБОТАНО!).", show_alert=True)
+        return
     user = get_user(user_id)
     parts = c.data.split("_")
     side = parts[2]  # heads / tails
@@ -85,6 +93,9 @@ def play_coin(c):
 
 def start_coin_direct(chat_id: int, user_id: int, side: str, bet: int):
     """Прямой запуск монетки из текстовой команды, например 'монетка орёл 1кк'."""
+    if not is_admin(user_id):
+        bot.send_message(chat_id, "⚠️ Монетка пока отключена для обычных игроков (НЕ ДОРАБОТАНО!).")
+        return
     user = get_user(user_id)
     if user["balance"] < bet:
         bot.send_message(chat_id, "❌ Недостаточно средств!")
@@ -217,6 +228,10 @@ def coin_pvp_room_text(room_id: str) -> str:
 
 @bot.callback_query_handler(func=lambda c: c.data == "coin_pvp_menu")
 def coin_pvp_menu(c):
+    user_id = c.from_user.id
+    if not is_admin(user_id):
+        bot.answer_callback_query(c.id, "⚠️ Монетка PvP пока отключена для обычных игроков.\nДоступна только админам: НЕ ДОРАБОТАНО!", show_alert=True)
+        return
     kb = types.InlineKeyboardMarkup(row_width=1)
     kb.add(
         types.InlineKeyboardButton("➕ Создать комнату", callback_data="coin_pvp_create_menu"),
@@ -224,7 +239,7 @@ def coin_pvp_menu(c):
         types.InlineKeyboardButton("◀️ Назад к монетке", callback_data="game_coin"),
     )
     text = (
-        "🪙 <b>МОНЕТКА PvP ДУЭЛИ</b>\n\n"
+        "🪙 <b>МОНЕТКА PvP ДУЭЛИ</b>  ⚠️ НЕ ДОРАБОТАНО!\n\n"
         "Создайте комнату — сразу выберите свою сторону + ставку (команды: монетка создать орёл 1кк).\n"
         "Соперник присоединяется и выбирает свою сторону.\n"
         "Выпадает случайная сторона — кто угадал, тот забирает банк (минус 5% комиссии).\n"
