@@ -1660,202 +1660,226 @@ export default function Casino() {
   const bal = profile?.balance || 0;
 
   // ====================== ALWAYS VISIBLE BALANCE HEADER (fully respects profile theme, including dark) ======================
-  const BalanceHeader = () => (
-    <div 
-      className="sticky top-14 z-[60] backdrop-blur border-b mb-3 px-3 sm:px-4 py-2.5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-y-1.5 gap-x-2 rounded-b-2xl shadow-sm overflow-x-hidden"
-      style={{ 
-        backgroundColor: 'color-mix(in srgb, var(--card) 100%, transparent)',
-        borderColor: 'var(--border)'
-      }}
-    >
-      {/* Left: Logo + Title + Level */}
-      <div className="flex items-center gap-2 min-w-0 flex-1">
-        <div className="flex items-center gap-2 flex-shrink-0">
-          <div 
-            className="w-8 h-8 rounded-xl flex items-center justify-center" 
-            style={{ background: 'var(--brand)' }}
-          >
-            <Coins className="w-4 h-4 text-white" />
-          </div>
-          <div className="min-w-0">
-            <span className="font-bold text-base sm:text-lg text-[var(--brand)] leading-none">Бутуз Казино</span>
-            {currentGame && (
-              <span 
-                className="ml-1.5 text-[10px] px-1.5 py-0.5 rounded align-middle"
+  // Integrated bet selector inside to prevent header from overlapping/sliding onto the bet panel on scroll.
+  const BalanceHeader = () => {
+    const showBetSelector =
+      currentGame &&
+      ['slots', 'mines', 'blackjack', 'dice', 'roulette', 'coin', 'plinko'].includes(currentGame) &&
+      !(currentGame === 'coin' && coinMode === 'pvp' && currentRoom);
+
+    return (
+      <div
+        className="sticky top-14 z-[60] backdrop-blur border-b mb-3 px-3 sm:px-4 py-2.5 flex flex-col gap-y-1.5 rounded-b-2xl shadow-sm overflow-x-hidden"
+        style={{
+          backgroundColor: 'color-mix(in srgb, var(--card) 100%, transparent)',
+          borderColor: 'var(--border)'
+        }}
+      >
+        {/* Top row: Logo + Title + Level + Balance + Actions */}
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-y-1.5 gap-x-2">
+          <div className="flex items-center gap-2 min-w-0 flex-1">
+            <div className="flex items-center gap-2 flex-shrink-0">
+              <div
+                className="w-8 h-8 rounded-xl flex items-center justify-center"
+                style={{ background: 'var(--brand)' }}
+              >
+                <Coins className="w-4 h-4 text-white" />
+              </div>
+              <div className="min-w-0">
+                <span className="font-bold text-base sm:text-lg text-[var(--brand)] leading-none">Бутуз Казино</span>
+                {currentGame && (
+                  <span
+                    className="ml-1.5 text-[10px] px-1.5 py-0.5 rounded align-middle"
+                    style={{ backgroundColor: 'var(--hover-bg)', color: 'var(--text-secondary)' }}
+                  >
+                    {currentGame.toUpperCase()}
+                  </span>
+                )}
+              </div>
+            </div>
+            {profile && (
+              <div
+                className="text-[10px] px-1.5 py-0.5 rounded flex-shrink-0"
                 style={{ backgroundColor: 'var(--hover-bg)', color: 'var(--text-secondary)' }}
               >
-                {currentGame.toUpperCase()}
-              </span>
+                Ур.{profile.level} {profile.vip ? '👑' : ''}
+              </div>
             )}
           </div>
+
+          {/* Right: Balance + Actions */}
+          <div className="flex items-center gap-2 sm:gap-3 w-full sm:w-auto">
+            <div className="flex-1 sm:flex-none text-right min-w-0">
+              <div className="text-[9px] tracking-widest leading-none" style={{ color: 'var(--text-muted)' }}>БАЛАНС</div>
+              <div
+                className="font-mono text-base sm:text-lg font-semibold tabular-nums leading-none truncate"
+                style={{ color: 'var(--brand-500)' }}
+              >
+                {fmt(bal)} <span className="text-[10px] align-super">{CURRENCY}</span>
+              </div>
+            </div>
+
+            <div className="flex gap-1.5 flex-shrink-0">
+              <button
+                onClick={refreshProfile}
+                className="text-[10px] px-2.5 py-1 border rounded-xl transition-colors hover:brightness-95 active:brightness-90 whitespace-nowrap"
+                style={{
+                  borderColor: 'var(--border)',
+                  backgroundColor: 'var(--card)',
+                  color: 'var(--text-primary)'
+                }}
+              >
+                Обновить
+              </button>
+              <button
+                onClick={async () => {
+                  try {
+                    const res = await api.casinoDailyClaim(token!);
+                    if (res.bonus) {
+                      alert(`Получен бонус +${fmt(res.bonus)} ${CURRENCY} (стрик ${res.streak})`);
+                      await refreshProfile();
+                    }
+                  } catch (e: any) {
+                    alert(e.message || 'Бонус уже получен');
+                  }
+                }}
+                className="text-[10px] px-2.5 py-1 rounded-xl whitespace-nowrap"
+                style={{
+                  backgroundColor: 'color-mix(in srgb, #10b981 15%, var(--card))',
+                  color: '#166534'
+                }}
+              >
+                🎁 Бонус
+              </button>
+              {currentGame && (
+                <button
+                  onClick={() => {
+                    setCurrentGame(null);
+                    setMinesSession(null);
+                    setMinesLost(null);
+                    setMinesOpened([]);
+                    setMinesMult(1.0);
+                    setBjSession(null);
+                    setBjPlayerHands([]);
+                    setBjDealerCards([]);
+                    setBjAnimating(false);
+                    setBjDealerDrawing(false);
+                    setBjCurrentHandIndex(0);
+                    setLastResult(null);
+                    setSpinningSlots(false);
+                    setSlotReels(['🍒', '🍋', '💎']);
+                    spinningReelsRef.current = [false, false, false];
+                    setActiveSpinningReels([false, false, false]);
+                    setDiceRolling(false);
+                    setDiceResult(null);
+                    setRouletteSpinning(false);
+                    setRouletteResult(null);
+                    setRouletteBetType('red');
+                    setRouletteTarget(null);
+                    setTargetWheelRotation(0);
+                    setPendingRouletteResult(null);
+                    wheelRotationRef.current = 0;
+                    setRouletteSpinning(false);
+                    setRouletteResult(null);
+                    setRouletteBetType('red');
+                    setRouletteTarget(null);
+                    setTargetWheelRotation(0);
+                    setPendingRouletteResult(null);
+                    wheelRotationRef.current = 0;
+                    // Coin resets
+                    setCoinMode('solo');
+                    setCoinSide('heads');
+                    setCoinFlipping(false);
+                    setCoinResult(null);
+                    setCoinFlipFace('heads');
+                    setPvpRooms([]);
+                    setCurrentRoom(null);
+                    setJoinCode('');
+                    setPvpMySide(null);
+                    setPvpFlipping(false);
+                    setPvpFlipResult(null);
+                    if (pvpPollRef.current) {
+                      clearInterval(pvpPollRef.current);
+                      pvpPollRef.current = null;
+                    }
+                    betInitializedRef.current = false; // allow last_bet re-init on re-entry
+
+                    // reset slots reel controls
+                    reelControls.forEach((c) => {
+                      c.stop();
+                      c.set({ y: 0 });
+                    });
+                  }}
+                  className="text-[10px] px-2 py-1 border rounded-xl whitespace-nowrap"
+                  style={{
+                    borderColor: 'color-mix(in srgb, #ef4444 30%, var(--border))',
+                    color: '#b91c1c'
+                  }}
+                >
+                  ← Лобби
+                </button>
+              )}
+            </div>
+          </div>
         </div>
-        {profile && (
-          <div 
-            className="text-[10px] px-1.5 py-0.5 rounded flex-shrink-0"
-            style={{ backgroundColor: 'var(--hover-bg)', color: 'var(--text-secondary)' }}
-          >
-            Ур.{profile.level} {profile.vip ? '👑' : ''}
+
+        {/* Bet selector row (integrated inside sticky header so it never gets overlapped by the casino header on scroll) */}
+        {showBetSelector && (
+          <div className="pt-2 mt-1.5 border-t flex flex-wrap items-center gap-2" style={{ borderColor: 'var(--border)' }}>
+            <div className="font-medium mr-1.5 text-sm opacity-90">Ставка:</div>
+            <div className="flex gap-1.5 flex-wrap">
+              {QUICK_BETS.map((q) => (
+                <button
+                  key={q}
+                  onClick={() => setQuickBet(q)}
+                  className="px-2.5 py-1 rounded-xl border text-xs sm:text-sm hover:bg-slate-50 active:bg-slate-100"
+                  style={{ borderColor: 'var(--border)' }}
+                >
+                  {fmt(q)}
+                </button>
+              ))}
+              <button
+                onClick={doVabank}
+                className="px-2.5 py-1 rounded-xl bg-amber-100 text-amber-800 text-xs sm:text-sm font-medium"
+              >
+                ВАБАНК
+              </button>
+            </div>
+            <input
+              type="number"
+              value={bet}
+              onChange={(e) => {
+                const raw = e.target.value;
+                if (raw === '') {
+                  setBet(MIN_BET);
+                  return;
+                }
+                const num = parseInt(raw, 10);
+                if (!isNaN(num)) {
+                  setBet(Math.min(bal, num));
+                }
+              }}
+              onBlur={() => {
+                if (bet < MIN_BET) {
+                  setBet(MIN_BET);
+                }
+              }}
+              className="ml-auto w-28 sm:w-40 border rounded-2xl px-3 py-1 sm:py-1.5 font-mono text-sm sm:text-base [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+            />
+            <div className="text-[10px] text-slate-500 w-16 sm:w-20 flex-shrink-0">мин {MIN_BET}</div>
           </div>
         )}
       </div>
-
-      {/* Right: Balance + Actions */}
-      <div className="flex items-center gap-2 sm:gap-3 w-full sm:w-auto">
-        <div className="flex-1 sm:flex-none text-right min-w-0">
-          <div className="text-[9px] tracking-widest leading-none" style={{ color: 'var(--text-muted)' }}>БАЛАНС</div>
-          <div 
-            className="font-mono text-base sm:text-lg font-semibold tabular-nums leading-none truncate"
-            style={{ color: 'var(--brand-500)' }}
-          >
-            {fmt(bal)} <span className="text-[10px] align-super">{CURRENCY}</span>
-          </div>
-        </div>
-
-        <div className="flex gap-1.5 flex-shrink-0">
-          <button
-            onClick={refreshProfile}
-            className="text-[10px] px-2.5 py-1 border rounded-xl transition-colors hover:brightness-95 active:brightness-90 whitespace-nowrap"
-            style={{ 
-              borderColor: 'var(--border)',
-              backgroundColor: 'var(--card)',
-              color: 'var(--text-primary)'
-            }}
-          >
-            Обновить
-          </button>
-          <button
-            onClick={async () => {
-              try {
-                const res = await api.casinoDailyClaim(token!);
-                if (res.bonus) {
-                  alert(`Получен бонус +${fmt(res.bonus)} ${CURRENCY} (стрик ${res.streak})`);
-                  await refreshProfile();
-                }
-              } catch (e: any) {
-                alert(e.message || 'Бонус уже получен');
-              }
-            }}
-            className="text-[10px] px-2.5 py-1 rounded-xl whitespace-nowrap"
-            style={{ 
-              backgroundColor: 'color-mix(in srgb, #10b981 15%, var(--card))',
-              color: '#166534'
-            }}
-          >
-            🎁 Бонус
-          </button>
-          {currentGame && (
-            <button
-              onClick={() => {
-                setCurrentGame(null);
-                setMinesSession(null);
-                setMinesLost(null);
-                setMinesOpened([]);
-                setMinesMult(1.0);
-                setBjSession(null);
-                setBjPlayerHands([]);
-                setBjDealerCards([]);
-                setBjAnimating(false);
-                setBjDealerDrawing(false);
-                setBjCurrentHandIndex(0);
-                setLastResult(null);
-                setSpinningSlots(false);
-                setSlotReels(['🍒', '🍋', '💎']);
-                spinningReelsRef.current = [false, false, false];
-                setActiveSpinningReels([false, false, false]);
-                setDiceRolling(false);
-                setDiceResult(null);
-                setRouletteSpinning(false);
-                setRouletteResult(null);
-                setRouletteBetType('red');
-                setRouletteTarget(null);
-                setTargetWheelRotation(0);
-                setPendingRouletteResult(null);
-                wheelRotationRef.current = 0;
-                setRouletteSpinning(false);
-                setRouletteResult(null);
-                setRouletteBetType('red');
-                setRouletteTarget(null);
-                setTargetWheelRotation(0);
-                setPendingRouletteResult(null);
-                wheelRotationRef.current = 0;
-                // Coin resets
-                setCoinMode('solo');
-                setCoinSide('heads');
-                setCoinFlipping(false);
-                setCoinResult(null);
-                setCoinFlipFace('heads');
-                setPvpRooms([]);
-                setCurrentRoom(null);
-                setJoinCode('');
-                setPvpMySide(null);
-                setPvpFlipping(false);
-                setPvpFlipResult(null);
-                if (pvpPollRef.current) { clearInterval(pvpPollRef.current); pvpPollRef.current = null; }
-                betInitializedRef.current = false; // allow last_bet re-init on re-entry
-
-                // reset slots reel controls
-                reelControls.forEach((c) => {
-                  c.stop();
-                  c.set({ y: 0 });
-                });
-              }}
-              className="text-[10px] px-2 py-1 border rounded-xl whitespace-nowrap"
-              style={{ 
-                borderColor: 'color-mix(in srgb, #ef4444 30%, var(--border))',
-                color: '#b91c1c'
-              }}
-            >
-              ← Лобби
-            </button>
-          )}
-        </div>
-      </div>
-    </div>
-  );
+    );
+  };
 
   return (
     <div className="w-full max-w-6xl mx-auto px-3 sm:px-4 py-5 sm:py-6 overflow-x-hidden">
       <BalanceHeader />
 
-     {/* Bet selector - only for actual games, not economy pages. Hide for active coin pvp room (bet is locked). */}
-      {['slots', 'mines', 'blackjack', 'dice', 'roulette', 'coin', 'plinko'].includes(currentGame) &&
-        !(currentGame === 'coin' && coinMode === 'pvp' && currentRoom) && (
-        <div className="bg-white border rounded-3xl p-4 mb-6 mt-2 flex flex-wrap items-center gap-3" style={{ backgroundColor: 'var(--card)', borderColor: 'var(--border)' }}>
-          <div className="font-medium mr-2">Ставка:</div>
-          <div className="flex gap-2 flex-wrap">
-            {QUICK_BETS.map(q => (
-              <button key={q} onClick={() => setQuickBet(q)} className="px-3 py-1.5 rounded-xl border text-sm hover:bg-slate-50 active:bg-slate-100">{fmt(q)}</button>
-            ))}
-            <button onClick={doVabank} className="px-3 py-1.5 rounded-xl bg-amber-100 text-amber-800 text-sm font-medium">ВАБАНК</button>
-          </div>
-          <input
-            type="number"
-            value={bet}
-            onChange={e => {
-              const raw = e.target.value;
-              if (raw === '') {
-                setBet(MIN_BET);
-                return;
-              }
-              const num = parseInt(raw, 10);
-              if (!isNaN(num)) {
-                setBet(Math.min(bal, num)); // allow values below MIN_BET while typing
-              }
-            }}
-            onBlur={() => {
-              if (bet < MIN_BET) {
-                setBet(MIN_BET);
-              }
-            }}
-            className="ml-auto w-32 sm:w-44 border rounded-2xl px-3 sm:px-4 py-1.5 sm:py-2 font-mono text-base sm:text-lg [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-          />
-          <div className="text-xs text-slate-500 w-20 sm:w-24 flex-shrink-0">мин {MIN_BET}</div>
-        </div>
-      )}
-
-     {/* Dedicated game views or hub — mobile safe */}
+      {/* Dedicated game views or hub — mobile safe */}
       {currentGame ? (
-        <div className="pb-8 w-full max-w-full overflow-x-hidden pt-2 pb-20">
+        <div className="pb-8 w-full max-w-full overflow-x-hidden pt-3 pb-20">
           {currentGame && !['slots', 'mines', 'blackjack', 'dice', 'roulette', 'coin', 'plinko'].includes(currentGame) && (
             <div className="w-full max-w-md mx-auto text-center py-12">
               <div className="text-7xl mb-4">🚧</div>
