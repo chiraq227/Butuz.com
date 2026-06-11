@@ -43,6 +43,16 @@ const QUICK_BETS = [1000, 10000, 100000, 1000000, 10000000];
 
 const SLOT_SYMBOLS = ["🍒", "🍋", "🍊", "🍇", "💎", "7️⃣", "⭐", "🔔"];
 
+const GAME_LABELS: Record<string, { name: string; desc?: string; emoji: string }> = {
+  slots:    { name: 'Слоты',    desc: '3 в ряд',        emoji: '🎰' },
+  mines:    { name: 'Мины',    desc: '5×5',            emoji: '💣' },
+  blackjack:{ name: 'Блэкджек', desc: 'Сплит • Дабл',   emoji: '🃏' },
+  dice:     { name: 'Кости',   desc: 'Классика',       emoji: '🎲' },
+  roulette: { name: 'Рулетка', desc: 'Европейская',    emoji: '🎡' },
+  coin:     { name: 'Монетка', desc: 'Орёл / Решка',   emoji: '🪙' },
+  plinko:   { name: 'Плинко',  desc: 'Физика падения', emoji: '🔴' },
+};
+
 // Note: This file is large by design (full casino with multiple games).
 // Heavy lifting is code-split at build time via Vite manualChunks + React.lazy in App.tsx.
 // For further source maintainability, individual games (slots, mines, etc.) can be extracted to ./casino/* in future.
@@ -1669,7 +1679,7 @@ export default function Casino() {
 
     return (
       <div
-        className="sticky top-14 z-[60] backdrop-blur border-b mb-3 px-3 sm:px-4 py-2.5 flex flex-col gap-y-1.5 rounded-b-2xl shadow-sm overflow-x-hidden"
+        className="sticky top-14 z-[60] backdrop-blur border-b mb-2 px-3 sm:px-4 py-2 sm:py-2.5 flex flex-col gap-y-1 rounded-b-2xl shadow-sm overflow-x-hidden"
         style={{
           backgroundColor: 'color-mix(in srgb, var(--card) 100%, transparent)',
           borderColor: 'var(--border)'
@@ -1685,14 +1695,17 @@ export default function Casino() {
               >
                 <Coins className="w-4 h-4 text-white" />
               </div>
-              <div className="min-w-0">
+              <div className="min-w-0 flex items-center gap-1.5 flex-wrap">
                 <span className="font-bold text-base sm:text-lg text-[var(--brand)] leading-none">Бутуз Казино</span>
-                {currentGame && (
+                {currentGame && GAME_LABELS[currentGame] && (
                   <span
-                    className="ml-1.5 text-[10px] px-1.5 py-0.5 rounded align-middle"
-                    style={{ backgroundColor: 'var(--hover-bg)', color: 'var(--text-secondary)' }}
+                    className="text-sm sm:text-[15px] font-medium leading-none whitespace-nowrap"
+                    style={{ color: 'var(--text-primary)' }}
                   >
-                    {currentGame.toUpperCase()}
+                    {GAME_LABELS[currentGame].emoji} {GAME_LABELS[currentGame].name}
+                    {GAME_LABELS[currentGame].desc && (
+                      <span className="ml-1 text-[10px] opacity-60 hidden sm:inline">({GAME_LABELS[currentGame].desc})</span>
+                    )}
                   </span>
                 )}
               </div>
@@ -1825,7 +1838,7 @@ export default function Casino() {
 
         {/* Bet selector row (integrated inside sticky header so it never gets overlapped by the casino header on scroll) */}
         {showBetSelector && (
-          <div className="pt-2 mt-1.5 border-t flex flex-wrap items-center gap-2" style={{ borderColor: 'var(--border)' }}>
+          <div className="pt-1.5 mt-1 border-t flex flex-wrap items-center gap-2" style={{ borderColor: 'var(--border)' }}>
             <div className="font-medium mr-1.5 text-sm opacity-90">Ставка:</div>
             <div className="flex gap-1.5 flex-wrap">
               {QUICK_BETS.map((q) => (
@@ -1879,28 +1892,20 @@ export default function Casino() {
 
       {/* Dedicated game views or hub — mobile safe */}
       {currentGame ? (
-        <div className="pb-8 w-full max-w-full pt-3 pb-20">
+        <div className="pb-8 w-full max-w-full pt-1 pb-16">
           {currentGame && !['slots', 'mines', 'blackjack', 'dice', 'roulette', 'coin', 'plinko'].includes(currentGame) && (
-            <div className="w-full max-w-md mx-auto text-center py-12">
-              <div className="text-7xl mb-4">🚧</div>
-              <div className="text-3xl font-bold mb-3">В разработке!</div>
-              <p className="text-sm opacity-70 mb-1">Игра «{currentGame?.toUpperCase()}»</p>
-              <p className="text-sm opacity-70">Эта игра находится в разработке и скоро станет доступна.</p>
+            <div className="w-full max-w-md mx-auto text-center py-8">
+              <div className="text-5xl mb-2">🚧</div>
+              <div className="text-2xl font-bold mb-2">В разработке!</div>
+              <p className="text-sm opacity-70">Игра «{currentGame?.toUpperCase()}» скоро появится.</p>
             </div>
           )}
 
          {/* MINES — fully restored */}
           {currentGame === 'mines' && (
             <div className="w-full max-w-[680px] mx-auto">
-              {/* Header - short */}
-              <div className="text-center mb-2">
-                <div className="text-6xl">💣</div>
-                <div className="text-3xl font-bold">Мины</div>
-                <div className="text-xs opacity-60 mt-0.5">5×5 • Не попади на мину</div>
-              </div>
-
               <div
-                className="rounded-3xl p-3 sm:p-5 mb-4 border overflow-x-hidden w-full"
+                className="rounded-3xl p-3 sm:p-5 mb-3 border overflow-x-hidden w-full"
                 style={{
                   background: 'linear-gradient(180deg, var(--game-felt) 0%, var(--game-felt2) 100%)',
                   borderColor: 'var(--game-border)',
@@ -2078,28 +2083,15 @@ export default function Casino() {
          {/* BLACKJACK - full with Split, Double, dealing animations */}
           {currentGame === 'blackjack' && (
             <div className="w-full max-w-[680px] mx-auto">
-              {/* Header - cleaner */}
-              <div className="text-center mb-3">
-                <div className="text-5xl">🃏</div>
-                <div className="text-3xl font-bold tracking-tight">Блэкджек</div>
-                <div className="text-sm opacity-60 mt-0.5">Сплит • Дабл • Natural x1.5</div>
-              </div>
-
               {/* Felt table - theme adaptive + relative for overlay result */}
               <div
-                className="rounded-3xl p-6 mb-4 border relative"
+                className="rounded-3xl p-6 mb-3 border relative"
                 style={{
                   background: 'linear-gradient(180deg, var(--game-felt) 0%, var(--game-felt2) 100%)',
                   borderColor: 'var(--game-border)',
                   color: 'var(--game-text)'
                 }}
               >
-                {/* Bet reminder */}
-                <div className="text-center mb-4">
-                  <span className="text-xs opacity-60">СТАВКА</span>
-                  <div className="text-2xl font-mono font-bold tabular-nums">{fmt(bet)}{CURRENCY}</div>
-                </div>
-
                 {/* Dealer - clear section */}
                 <div className="mb-5">
                   <div className="uppercase tracking-[1.5px] text-xs font-semibold mb-1.5 flex items-center gap-2 opacity-80">
@@ -2362,16 +2354,8 @@ export default function Casino() {
           {/* ====================== МОНЕТКА — полностью переработанная, интуитивная + анимации + PvP комнаты ====================== */}
           {currentGame === 'coin' && isButuz && (
             <div className="w-full max-w-[680px] mx-auto">
-              {/* Header */}
-              <div className="text-center mb-4">
-                <div className="text-7xl mb-1">🪙</div>
-                <div className="text-3xl font-bold tracking-tight">Монетка</div>
-                <div className="mt-1 inline-block px-2 py-0.5 rounded bg-red-600 text-white text-[10px] font-bold tracking-wider">НЕ ДОРАБОТАНО!</div>
-                <div className="text-sm opacity-60 mt-0.5">Классика. x2 при совпадении. Честный 50/50.</div>
-              </div>
-
               {/* Mode switch — максимально понятный */}
-              <div className="flex gap-2 mb-5 justify-center">
+              <div className="flex gap-2 mb-4 justify-center">
                 <button
                   onClick={() => { setCoinMode('solo'); clearPvp(); }}
                   className={`px-6 py-2.5 rounded-2xl text-sm font-semibold transition active:scale-[0.985] ${coinMode === 'solo' ? 'text-white' : 'border'}`}
@@ -2837,14 +2821,6 @@ export default function Casino() {
               <div className="flex flex-col lg:flex-row gap-4 lg:gap-6">
                 {/* LEFT — big beautiful board */}
                 <div className="flex-1 min-w-0">
-                  <div className="mb-2 flex items-center gap-2">
-                    <div className="text-3xl">🔴</div>
-                    <div>
-                      <div className="text-3xl font-bold tracking-tight">Плинко</div>
-                      <div className="text-[11px] opacity-50 -mt-0.5">реальная физика падения</div>
-                    </div>
-                  </div>
-
                   <div className="relative w-full max-w-[620px] mx-auto rounded-3xl border overflow-hidden bg-[#0b111f] shadow-xl" style={{ borderColor: 'var(--border)' }}>
                     <PlinkoBoard
                       risk={plinkoRisk}
@@ -2964,15 +2940,9 @@ export default function Casino() {
           {/* SLOTS — dark machine, high-quality vertical reel strips with smooth deceleration */}
           {currentGame === 'slots' && (
             <div className="max-w-md mx-auto">
-              <div className="text-center mb-3">
-                <div className="text-6xl">🎰</div>
-                <div className="text-3xl font-bold">Слоты</div>
-                <div className="text-xs opacity-60 mt-0.5">Три в ряд — джекпот! Пара — x1.5</div>
-              </div>
-
               {/* Slot machine body - adapts to theme */}
               <div 
-                className="rounded-3xl p-4 mb-4 border shadow-xl"
+                className="rounded-3xl p-4 mb-3 border shadow-xl"
                 style={{
                   background: 'linear-gradient(180deg, var(--game-felt) 0%, var(--game-felt2) 100%)',
                   borderColor: 'var(--game-border)'
@@ -3083,14 +3053,8 @@ export default function Casino() {
          {/* DICE dedicated UI */}
           {currentGame === 'dice' && (
             <div className="max-w-md mx-auto">
-              <div className="text-center mb-4">
-                <div className="text-6xl">🎲</div>
-                <div className="text-3xl font-bold">Кости</div>
-                <div className="text-xs opacity-60 mt-1">Классика • Выбери тип ставки</div>
-              </div>
-
              {/* Bet type selector */}
-              <div className="bg-white border rounded-3xl p-4 mb-4" style={{backgroundColor:'var(--card)', borderColor:'var(--border)'}}>
+              <div className="bg-white border rounded-3xl p-4 mb-3" style={{backgroundColor:'var(--card)', borderColor:'var(--border)'}}>
                 <div className="text-sm font-medium mb-2 px-1 opacity-70">Тип ставки:</div>
 
                 <div className="grid grid-cols-2 gap-2 mb-3">
@@ -3200,11 +3164,6 @@ export default function Casino() {
          {/* ROULETTE dedicated UI - bigger wheel left (340px), selector right, larger cell text */}
           {currentGame === 'roulette' && (
             <div className="w-full max-w-[680px] mx-auto">
-              <div className="text-center mb-3">
-                <div className="text-6xl">🎡</div>
-                <div className="text-3xl font-bold">Европейская Рулетка</div>
-              </div>
-
               <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 items-center sm:items-start">
                {/* LEFT: Big wheel - responsive */}
                 <div className="flex-shrink-0 w-full max-w-[280px] sm:max-w-[340px] mx-auto">
