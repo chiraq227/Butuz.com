@@ -48,7 +48,7 @@ def bank_deposit_handler(c):
         "message_id": c.message.message_id
     }
     kb = types.InlineKeyboardMarkup(row_width=2)
-    if user["balance"] >= 100000:
+    if user["balance"] >= 10000:
         kb.add(types.InlineKeyboardButton(f"📥 {fmt(user['balance']//2)} (50%)", callback_data="bank_dep_50"))
     if user["balance"] > 0:
         kb.add(types.InlineKeyboardButton("📥 Всё (100%)", callback_data="bank_dep_100"))
@@ -94,7 +94,7 @@ def bank_withdraw_handler(c):
         "message_id": c.message.message_id
     }
     kb = types.InlineKeyboardMarkup(row_width=2)
-    if bb >= 100000:
+    if bb >= 10000:
         kb.add(types.InlineKeyboardButton(f"📤 {fmt(bb//2)} (50%)", callback_data="bank_wd_50"))
     if bb > 0:
         kb.add(types.InlineKeyboardButton("📤 Всё (100%)", callback_data="bank_wd_100"))

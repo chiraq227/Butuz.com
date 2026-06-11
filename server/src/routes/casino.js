@@ -6,14 +6,14 @@ const router = express.Router();
 
 // ====================== CONFIG (ported from butuz-cas-bu/config.py) ======================
 const CURRENCY = '💎';
-const START_BALANCE = 1000000;
-const DAILY_BONUS = 100000000;
-const REFERRAL_BONUS = 50000;
-const MIN_BET = 10;
-const MAX_BET = 1000000000000000000000000; // still very high — consider lowering in real deployment
-const RATING_PRICE = 600_000_000;
+const START_BALANCE = 100000;
+const DAILY_BONUS = 10000000;
+const REFERRAL_BONUS = 5000;
+const MIN_BET = 1;
+const MAX_BET = 100000000000000000000000; // still very high — consider lowering in real deployment
+const RATING_PRICE = 60_000_000;
 const RATING_SELL_RATE = 0.6;
-const VIP_PRICE = 250_000_000_000;
+const VIP_PRICE = 25_000_000_000;
 
 // Simple helper to prevent negative / insane amounts that could be used for abuse
 function safePositiveInt(val, max = Number.MAX_SAFE_INTEGER) {
@@ -22,58 +22,58 @@ function safePositiveInt(val, max = Number.MAX_SAFE_INTEGER) {
   return Math.min(n, max);
 }
 
-const TRANSFER_MIN = 10;
-const TRANSFER_MAX = 50_000_000_000;
-const TRANSFER_MAX_VIP = 250_000_000_000;
+const TRANSFER_MIN = 1;
+const TRANSFER_MAX = 5_000_000_000;
+const TRANSFER_MAX_VIP = 25_000_000_000;
 const TRANSFER_DAILY_LIMIT = 5;
 const TRANSFER_DAILY_LIMIT_VIP = 25;
 
-const BTC_SELL_RATE = 65000;
+const BTC_SELL_RATE = 6500;
 const MAX_EXTRA_FARMS = 1000;
 const MINES_HOUSE_EDGE = 0.90; // переработано: иксы стали меньше (было 0.95), сложнее фармить валюту
 
 const FARM_LEVELS = {
-  1: { name: "🖥️ Старый ноутбук", btc_per_hour: 0.100, price: 500000, emoji: "🖥️" },
-  2: { name: "💻 Игровой ПК", btc_per_hour: 0.500, price: 630000, emoji: "💻" },
-  3: { name: "⚡ Разгонный ПК", btc_per_hour: 1.000, price: 670000, emoji: "⚡" },
-  4: { name: "🔧 ASIC Начальный", btc_per_hour: 5.000, price: 720000, emoji: "🔧" },
-  5: { name: "⛏️ ASIC Стандарт", btc_per_hour: 10.000, price: 800000, emoji: "⛏️" },
-  6: { name: "🏭 Мини-ферма", btc_per_hour: 25.000, price: 950000, emoji: "🏭" },
-  7: { name: "🔋 Ферма среднего класса", btc_per_hour: 50.000, price: 1500000, emoji: "🔋" },
-  8: { name: "🚀 Продвинутая ферма", btc_per_hour: 100.800, price: 2000000, emoji: "🚀" },
-  9: { name: "💎 Мега-ферма", btc_per_hour: 170.000, price: 5000000, emoji: "💎" },
-  10: { name: "👑 Бутуз-центр", btc_per_hour: 250.000, price: 12000000, emoji: "👑" },
+  1: { name: "🖥️ Старый ноутбук", btc_per_hour: 0.010, price: 50000, emoji: "🖥️" },
+  2: { name: "💻 Игровой ПК", btc_per_hour: 0.050, price: 63000, emoji: "💻" },
+  3: { name: "⚡ Разгонный ПК", btc_per_hour: 0.100, price: 67000, emoji: "⚡" },
+  4: { name: "🔧 ASIC Начальный", btc_per_hour: 0.500, price: 72000, emoji: "🔧" },
+  5: { name: "⛏️ ASIC Стандарт", btc_per_hour: 1.000, price: 80000, emoji: "⛏️" },
+  6: { name: "🏭 Мини-ферма", btc_per_hour: 2.500, price: 95000, emoji: "🏭" },
+  7: { name: "🔋 Ферма среднего класса", btc_per_hour: 5.000, price: 150000, emoji: "🔋" },
+  8: { name: "🚀 Продвинутая ферма", btc_per_hour: 10.080, price: 200000, emoji: "🚀" },
+  9: { name: "💎 Мега-ферма", btc_per_hour: 17.000, price: 500000, emoji: "💎" },
+  10: { name: "👑 Бутуз-центр", btc_per_hour: 25.000, price: 1200000, emoji: "👑" },
 };
 
 const BUSINESSES = {
-  1: { id: 1, name: "🏪 Шаурмичная", price: 5_000_000, income_min: 15000, income_max: 45000, emoji: "🏪", tasks: [
+  1: { id: 1, name: "🏪 Шаурмичная", price: 500_000, income_min: 1500, income_max: 4500, emoji: "🏪", tasks: [
     { id: "meat", name: "🥩 Закупить мясо" }, { id: "sauce", name: "🧴 Секретный соус" }, { id: "flyer", name: "📄 Раздать листовки" }
   ]},
-  2: { id: 2, name: "☕ Кофейня", price: 25_000_000, income_min: 80000, income_max: 240000, emoji: "☕", tasks: [
+  2: { id: 2, name: "☕ Кофейня", price: 2_500_000, income_min: 8000, income_max: 24000, emoji: "☕", tasks: [
     { id: "beans", name: "🫘 Элитные зёрна" }, { id: "barista", name: "🤵 Обучить бариста" }, { id: "wifi", name: "⚡ Быстрый Wi-Fi" }
   ]},
-  3: { id: 3, name: "🧼 Автомойка", price: 150_000_000, income_min: 500000, income_max: 1500000, emoji: "🧼", tasks: [
+  3: { id: 3, name: "🧼 Автомойка", price: 15_000_000, income_min: 50000, income_max: 150000, emoji: "🧼", tasks: [
     { id: "foam", name: "🧼 Активная пена" }, { id: "vacuum", name: "🌀 Мощный пылесос" }, { id: "lux", name: "✨ Комплекс Люкс" }
   ]},
-  4: { id: 4, name: "🥊 Фитнес-клуб", price: 800_000_000, income_min: 2500000, income_max: 7500000, emoji: "🥊", tasks: [
+  4: { id: 4, name: "🥊 Фитнес-клуб", price: 80_000_000, income_min: 250000, income_max: 750000, emoji: "🥊", tasks: [
     { id: "coaches", name: "💪 Топ-тренеры" }, { id: "protein", name: "🥤 Протеин-бар" }, { id: "pool", name: "🏊 Хлорировать бассейн" }
   ]},
-  5: { id: 5, name: "🏨 Отель", price: 3500000000, income_min: 12000000, income_max: 36000000, emoji: "🏨", tasks: [
+  5: { id: 5, name: "🏨 Отель", price: 350000000, income_min: 1200000, income_max: 3600000, emoji: "🏨", tasks: [
     { id: "stars", name: "⭐️ Пятая звезда" }, { id: "buffet", name: "🍳 Шведский стол" }, { id: "vip_room", name: "🛋️ Президентский люкс" }
   ]},
-  6: { id: 6, name: "🚢 Логистическая компания", price: 15000000000, income_min: 50000000, income_max: 150000000, emoji: "🚢", tasks: [
+  6: { id: 6, name: "🚢 Логистическая компания", price: 1500000000, income_min: 5000000, income_max: 15000000, emoji: "🚢", tasks: [
     { id: "trucks", name: "🚛 Новые фуры" }, { id: "customs", name: "🛃 Таможня" }, { id: "route", name: "🗺️ Новый маршрут" }
   ]},
-  7: { id: 7, name: "🏭 Нефтяная вышка", price: 60000000000, income_min: 200000000, income_max: 600000000, emoji: "🏭", tasks: [
+  7: { id: 7, name: "🏭 Нефтяная вышка", price: 6000000000, income_min: 20000000, income_max: 60000000, emoji: "🏭", tasks: [
     { id: "drill", name: "⚙️ Бурение" }, { id: "ecology", name: "🌱 Эко-контроль" }, { id: "export", name: "🛢️ Контракт на экспорт" }
   ]},
-  8: { id: 8, name: "🚀 Аэрокосмический завод", price: 250000000000, income_min: 1000000000, income_max: 3000000000, emoji: "🚀", tasks: [
+  8: { id: 8, name: "🚀 Аэрокосмический завод", price: 25000000000, income_min: 100000000, income_max: 300000000, emoji: "🚀", tasks: [
     { id: "engine", name: "🔥 Ионный двигатель" }, { id: "satellite", name: "📡 Спутник связи" }, { id: "mars", name: "☄️ Миссия на Марс" }
   ]},
-  9: { id: 9, name: "🌍 Международная корпорация", price: 100000000000, income_min: 1000000000, income_max: 5000000000, emoji: "🌍", tasks: [
+  9: { id: 9, name: "🌍 Международная корпорация", price: 10000000000, income_min: 100000000, income_max: 500000000, emoji: "🌍", tasks: [
     { id: "merge", name: "🤝 Поглотить компанию" }, { id: "lobby", name: "🎩 Лоббирование" }, { id: "monopoly", name: "♟️ Захватить рынок" }
   ]},
-  10: { id: 10, name: "🌐 Мировое правительство", price: 1000000000000, income_min: 10000000000, income_max: 100000000000, emoji: "🌐", tasks: [
+  10: { id: 10, name: "🌐 Мировое правительство", price: 100000000000, income_min: 1000000000, income_max: 10000000000, emoji: "🌐", tasks: [
     { id: "summit", name: "🕊️ Провести саммит" }, { id: "sanction", name: "⚔️ Ввести санкции" }, { id: "print", name: "💵 Напечатать деньги" }
   ]},
 };
@@ -138,40 +138,40 @@ const DEPOSIT_TIERS = [
     id: 'short',
     name: 'Краткосрочный',
     emoji: '📅',
-    rate: 5,
+    rate: 0.5,
     term_days: 7,
-    min: 5000,
-    max: 1000000,
+    min: 500,
+    max: 100000,
     desc: 'Быстрый возврат, небольшая доходность',
   },
   {
     id: 'standard',
     name: 'Стандартный',
     emoji: '📆',
-    rate: 10,
+    rate: 1,
     term_days: 14,
-    min: 25000,
-    max: 500000,
+    min: 2500,
+    max: 50000,
     desc: 'Оптимальный баланс срока и дохода',
   },
   {
     id: 'profitable',
     name: 'Выгодный',
     emoji: '💰',
-    rate: 18,
+    rate: 1.8,
     term_days: 30,
-    min: 100000,
-    max: 300000,
+    min: 10000,
+    max: 30000,
     desc: 'Хорошая доходность, средний срок',
   },
   {
     id: 'premium',
     name: 'Премиум',
     emoji: '👑',
-    rate: 30,
+    rate: 3,
     term_days: 60,
-    min: 250000,
-    max: 150000,
+    min: 25000,
+    max: 15000,
     desc: 'Максимальный процент — для крупных сумм на долгий срок',
   },
 ];
@@ -311,7 +311,7 @@ async function updateCasinoBalance(db, userId, delta, isWin = null) {
   profile.games_played = (profile.games_played || 0) + 1;
 
   // XP + level (ported logic)
-  const xpGain = Math.max(1, Math.floor(Math.abs(delta) / 10000));
+  const xpGain = Math.max(1, Math.floor(Math.abs(delta) / 1000));
   profile.xp = (profile.xp || 0) + xpGain;
   profile.level = Math.min(MAX_LEVEL, calcLevelFromXp(profile.xp));
 
@@ -319,9 +319,9 @@ async function updateCasinoBalance(db, userId, delta, isWin = null) {
   profile.achievements = profile.achievements || [];
   const checks = [
     ['first_win', profile.total_won >= 1],
-    ['rich', profile.balance >= 10000],
+    ['rich', profile.balance >= 1000],
     ['veteran', profile.games_played >= 100],
-    ['whale', profile.total_won >= 100000],
+    ['whale', profile.total_won >= 10000],
     ['lucky', profile.level >= 5],
   ];
   for (const [key, cond] of checks) {
@@ -428,7 +428,7 @@ router.post('/bonus/claim', authMiddleware, async (req, res) => {
       profile.streak = 1;
     }
 
-    let bonus = DAILY_BONUS + (profile.streak - 1) * 100;
+    let bonus = DAILY_BONUS + (profile.streak - 1) * 10;
     if (profile.vip) bonus = Math.floor(bonus * 1.5);
 
     profile.balance += bonus;

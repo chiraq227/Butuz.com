@@ -8,37 +8,37 @@ ADMIN_IDS = [8850923411]               # ⚙️ Telegram ID администра
 CHANNEL_ID = "@ButuzCasino"             # ⚙️ Канал для подписки (или "" чтобы отключить)
 SUPPORT_USERNAME = "@emolover"  # ⚙️ Username поддержки
 
-START_BALANCE = 1000000        # Начальный баланс
-DAILY_BONUS = 100000000           # Ежедневный бонус
-REFERRAL_BONUS = 50000        # Бонус за реферала
-MIN_BET = 10                # Минимальная ставка
-MAX_BET = 1000000000000000000000000             # Максимальная ставка
+START_BALANCE = 100000        # Начальный баланс
+DAILY_BONUS = 10000000           # Ежедневный бонус
+REFERRAL_BONUS = 5000        # Бонус за реферала
+MIN_BET = 1                # Минимальная ставка
+MAX_BET = 100000000000000000000000             # Максимальная ставка
 CURRENCY = "💎"             # Символ валюты
 CURRENCY_NAME = "кристаллов"  # Название валюты
 
-RATING_PRICE = 600_000_000   # Цена 1 единицы рейтинга
+RATING_PRICE = 60_000_000   # Цена 1 единицы рейтинга
 RATING_ICON = "👑"           # Иконка рейтинга
 
-TRANSFER_MIN = 10                    # Минимальная сумма перевода
-TRANSFER_MAX = 50_000_000_000        # Макс. сумма за 1 перевод (обычный)
-TRANSFER_MAX_VIP = 250_000_000_000   # Макс. сумма за 1 перевод (VIP)
+TRANSFER_MIN = 1                    # Минимальная сумма перевода
+TRANSFER_MAX = 5_000_000_000        # Макс. сумма за 1 перевод (обычный)
+TRANSFER_MAX_VIP = 25_000_000_000   # Макс. сумма за 1 перевод (VIP)
 TRANSFER_DAILY_LIMIT = 5             # Переводов в день (обычный)
 TRANSFER_DAILY_LIMIT_VIP = 25        # Переводов в день (VIP)
 
-BTC_SELL_RATE = 65000  # 1 BTC = 65000 кристаллов
+BTC_SELL_RATE = 6500  # 1 BTC = 6500 кристаллов
 MAX_EXTRA_FARMS = 1000  # Максимум ферм 10-го уровня которые можно докупить
 
 FARM_LEVELS = {
-    1:  {"name": "🖥️ Старый ноутбук",      "btc_per_hour": 0.100,  "price": 500000,    "emoji": "🖥️"},
-    2:  {"name": "💻 Игровой ПК",           "btc_per_hour": 0.500,  "price": 630000,   "emoji": "💻"},
-    3:  {"name": "⚡ Разгонный ПК",         "btc_per_hour": 1.000,  "price": 670000,   "emoji": "⚡"},
-    4:  {"name": "🔧 ASIC Начальный",       "btc_per_hour": 5.000,  "price": 720000,   "emoji": "🔧"},
-    5:  {"name": "⛏️ ASIC Стандарт",        "btc_per_hour": 10.000,  "price": 800000,  "emoji": "⛏️"},
-    6:  {"name": "🏭 Мини-ферма",           "btc_per_hour": 25.000,  "price": 950000,  "emoji": "🏭"},
-    7:  {"name": "🔋 Ферма среднего класса","btc_per_hour": 50.000,  "price": 1500000,  "emoji": "🔋"},
-    8:  {"name": "🚀 Продвинутая ферма",    "btc_per_hour": 100.800,  "price": 2000000, "emoji": "🚀"},
-    9:  {"name": "💎 Мега-ферма",           "btc_per_hour": 170.000,  "price": 5000000, "emoji": "💎"},
-    10: {"name": "👑 Бутуз-центр",           "btc_per_hour": 250.000,  "price": 12000000,"emoji": "👑"},
+    1:  {"name": "🖥️ Старый ноутбук",      "btc_per_hour": 0.010,  "price": 50000,    "emoji": "🖥️"},
+    2:  {"name": "💻 Игровой ПК",           "btc_per_hour": 0.050,  "price": 63000,   "emoji": "💻"},
+    3:  {"name": "⚡ Разгонный ПК",         "btc_per_hour": 0.100,  "price": 67000,   "emoji": "⚡"},
+    4:  {"name": "🔧 ASIC Начальный",       "btc_per_hour": 0.500,  "price": 72000,   "emoji": "🔧"},
+    5:  {"name": "⛏️ ASIC Стандарт",        "btc_per_hour": 1.000,  "price": 80000,  "emoji": "⛏️"},
+    6:  {"name": "🏭 Мини-ферма",           "btc_per_hour": 2.500,  "price": 95000,  "emoji": "🏭"},
+    7:  {"name": "🔋 Ферма среднего класса","btc_per_hour": 5.000,  "price": 150000,  "emoji": "🔋"},
+    8:  {"name": "🚀 Продвинутая ферма",    "btc_per_hour": 10.080,  "price": 200000, "emoji": "🚀"},
+    9:  {"name": "💎 Мега-ферма",           "btc_per_hour": 17.000,  "price": 500000, "emoji": "💎"},
+    10: {"name": "👑 Бутуз-центр",           "btc_per_hour": 25.000,  "price": 1200000,"emoji": "👑"},
 }
 
 BUSINESS_TASK_COOLDOWN = 3600 # 1 час между задачами (в секундах)
@@ -47,9 +47,9 @@ BUSINESSES = {
     1: {
         "id": 1,
         "name": "🏪 Шаурмичная",
-        "price": 5_000_000,
-        "income_min": 15_000,
-        "income_max": 45_000,
+        "price": 500_000,
+        "income_min": 1_500,
+        "income_max": 4_500,
         "emoji": "🏪",
         "tasks": [
             {"id": "meat", "name": "🥩 Закупить мясо", "desc": "Купить свежее мясо у Ашота"},
@@ -60,9 +60,9 @@ BUSINESSES = {
     2: {
         "id": 2,
         "name": "☕ Кофейня",
-        "price": 25_000_000,
-        "income_min": 80_000,
-        "income_max": 240_000,
+        "price": 2_500_000,
+        "income_min": 8_000,
+        "income_max": 24_000,
         "emoji": "☕",
         "tasks": [
             {"id": "beans", "name": "🫘 Элитные зёрна", "desc": "Заказать арабику из Колумбии"},
@@ -73,9 +73,9 @@ BUSINESSES = {
     3: {
         "id": 3,
         "name": "🧼 Автомойка",
-        "price": 150_000_000,
-        "income_min": 500_000,
-        "income_max": 1_500_000,
+        "price": 15_000_000,
+        "income_min": 50_000,
+        "income_max": 150_000,
         "emoji": "🧼",
         "tasks": [
             {"id": "foam", "name": "🧼 Активная пена", "desc": "Закупить премиальный немецкий шампунь"},
@@ -86,9 +86,9 @@ BUSINESSES = {
     4: {
         "id": 4,
         "name": "🥊 Фитнес-клуб",
-        "price": 800_000_000,
-        "income_min": 2_500_000,
-        "income_max": 7_500_000,
+        "price": 80_000_000,
+        "income_min": 250_000,
+        "income_max": 750_000,
         "emoji": "🥊",
         "tasks": [
             {"id": "coaches", "name": "💪 Топ-тренеры", "desc": "Переманить тренеров из престижного зала"},
@@ -99,9 +99,9 @@ BUSINESSES = {
     5: {
         "id": 5,
         "name": "🏨 Отель",
-        "price": 3_500_000_000,
-        "income_min": 12_000_000,
-        "income_max": 36_000_000,
+        "price": 350_000_000,
+        "income_min": 1_200_000,
+        "income_max": 3_600_000,
         "emoji": "🏨",
         "tasks": [
             {"id": "stars", "name": "⭐️ Пятая звезда", "desc": "Пройти сертификацию на Luxury отель"},
@@ -112,9 +112,9 @@ BUSINESSES = {
     6: {
         "id": 6,
         "name": "🚢 Логистическая компания",
-        "price": 15_000_000_000,
-        "income_min": 50_000_000,
-        "income_max": 150_000_000,
+        "price": 1_500_000_000,
+        "income_min": 5_000_000,
+        "income_max": 15_000_000,
         "emoji": "🚢",
         "tasks": [
             {"id": "trucks", "name": "🚛 Новые фуры", "desc": "Закупить партию тягачей Scania"},
@@ -125,9 +125,9 @@ BUSINESSES = {
     7: {
         "id": 7,
         "name": "🏭 Нефтяная вышка",
-        "price": 60_000_000_000,
-        "income_min": 200_000_000,
-        "income_max": 600_000_000,
+        "price": 6_000_000_000,
+        "income_min": 20_000_000,
+        "income_max": 60_000_000,
         "emoji": "🏭",
         "tasks": [
             {"id": "drill", "name": "⚙️ Бурение", "desc": "Углубить основную скважину"},
@@ -138,9 +138,9 @@ BUSINESSES = {
     8: {
         "id": 8,
         "name": "🚀 Аэрокосмический завод",
-        "price": 250_000_000_000,
-        "income_min": 1_000_000_000,
-        "income_max": 3_000_000_000,
+        "price": 25_000_000_000,
+        "income_min": 100_000_000,
+        "income_max": 300_000_000,
         "emoji": "🚀",
         "tasks": [
             {"id": "engine", "name": "🔥 Ионный двигатель", "desc": "Разработать прототип нового двигателя"},
@@ -151,9 +151,9 @@ BUSINESSES = {
     9: {
         "id": 9,
         "name": "🌍 Международная корпорация",
-        "price": 100_000_000_000,
-        "income_min": 1_000_000_000,
-        "income_max": 5_000_000_000,
+        "price": 10_000_000_000,
+        "income_min": 100_000_000,
+        "income_max": 500_000_000,
         "emoji": "🌍",
         "tasks": [
             {"id": "merge", "name": "🤝 Поглотить компанию", "desc": "Провести слияние с конкурентом"},
@@ -164,9 +164,9 @@ BUSINESSES = {
     10: {
         "id": 10,
         "name": "🌐 Мировое правительство",
-        "price": 1_000_000_000_000,
-        "income_min": 10_000_000_000,
-        "income_max": 100_000_000_000,
+        "price": 100_000_000_000,
+        "income_min": 1_000_000_000,
+        "income_max": 10_000_000_000,
         "emoji": "🌐",
         "tasks": [
             {"id": "summit", "name": "🕊️ Провести саммит", "desc": "Организовать встречу мировых лидеров"},

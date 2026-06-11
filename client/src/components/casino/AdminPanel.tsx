@@ -85,17 +85,17 @@ export default function AdminPanel({ token, api, showToast, refreshProfile, isBu
   const [sortDir, setSortDir] = useState<'desc' | 'asc'>('desc');
   const [view, setView] = useState<'cards' | 'table'>('cards');
 
-  const [globalAmt, setGlobalAmt] = useState(1_000_000);
+  const [globalAmt, setGlobalAmt] = useState(100_000);
   const [selected, setSelected] = useState<Set<string>>(new Set());
 
   const [inspect, setInspect] = useState<AdminInspect | null>(null);
-  const [inspectLocalAmt, setInspectLocalAmt] = useState(1_000_000);
+  const [inspectLocalAmt, setInspectLocalAmt] = useState(100_000);
 
   const [loading, setLoading] = useState(false);
   const [showLogs, setShowLogs] = useState(false);
 
   // Amount presets — always high contrast
-  const AMOUNTS = [1_000, 10_000, 100_000, 1_000_000, 10_000_000, 100_000_000, 1_000_000_000, 10_000_000_000];
+  const AMOUNTS = [100, 1_000, 10_000, 100_000, 1_000_000, 10_000_000, 100_000_000, 1_000_000_000];
 
   async function loadUsers(opts?: Partial<{ q: string; filter: string; sort: string; dir: string }>) {
     if (!token || !isButuz) return;

@@ -56,7 +56,7 @@ def check_achievements(user_id: int):
         ("first_win", "🏆 Первая победа!", user["total_won"] >= 1),
         ("rich", "💰 Богач", user["balance"] >= 10000),
         ("veteran", "⚔️ Ветеран", user["games_played"] >= 100),
-        ("whale", "🐋 Кит", user["total_won"] >= 100000),
+        ("whale", "🐋 Кит", user["total_won"] >= 10000),
         ("lucky", "🍀 Везунчик", user["level"] >= 5),
     ]
     for key, name, condition in checks:

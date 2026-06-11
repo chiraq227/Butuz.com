@@ -170,9 +170,9 @@ def admin_inline(c):
     action = c.data
     chat = c.message.chat.id
     if action == "adm_money":
-        bot.send_message(chat, "💰 <b>Деньги</b>\n/give @user 1000000\n/take @user 500000\n/setbalance @user 999999999")
+        bot.send_message(chat, "💰 <b>Деньги</b>\n/give @user 100000\n/take @user 50000\n/setbalance @user 99999999")
     elif action == "adm_rating":
-        bot.send_message(chat, "👑 <b>Рейтинг</b>\n/giverating @user 10000\n/takerating @user 5000\n/setrating @user 500000")
+        bot.send_message(chat, "👑 <b>Рейтинг</b>\n/giverating @user 1000\n/takerating @user 500\n/setrating @user 50000")
     elif action == "adm_status":
         bot.send_message(chat, "🛡️ <b>Статусы</b>\n/vip @user\n/ban @user\n/unban @user\n/setlevel @user 50")
     elif action == "adm_userinfo":

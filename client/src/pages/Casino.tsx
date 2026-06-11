@@ -23,23 +23,23 @@ interface CasinoProfile {
 }
 
 const CURRENCY = '💎';
-const MIN_BET = 10;
-const TRANSFER_MIN = 10;
+const MIN_BET = 1;
+const TRANSFER_MIN = 1;
 
 const FARM_LEVELS_FRONT = {
-  1:  {name: "🖥️ Старый ноутбук",      btc_per_hour: 0.100,  price: 500000,    emoji: "🖥️"},
-  2:  {name: "💻 Игровой ПК",           btc_per_hour: 0.500,  price: 630000,   emoji: "💻"},
-  3:  {name: "⚡ Разгонный ПК",         btc_per_hour: 1.000,  price: 670000,   emoji: "⚡"},
-  4:  {name: "🔧 ASIC Начальный",       btc_per_hour: 5.000,  price: 720000,   emoji: "🔧"},
-  5:  {name: "⛏️ ASIC Стандарт",        btc_per_hour: 10.000,  price: 800000,  emoji: "⛏️"},
-  6:  {name: "🏭 Мини-ферма",           btc_per_hour: 25.000,  price: 950000,  emoji: "🏭"},
-  7:  {name: "🔋 Ферма среднего класса",btc_per_hour: 50.000,  price: 1500000, emoji: "🔋"},
-  8:  {name: "🚀 Продвинутая ферма",    btc_per_hour: 100.800,  price: 2000000, emoji: "🚀"},
-  9:  {name: "💎 Мега-ферма",           btc_per_hour: 170.000,  price: 5000000, emoji: "💎"},
-  10: {name: "👑 Бутуз-центр",           btc_per_hour: 250.000,  price: 12000000,emoji: "👑"},
+  1:  {name: "🖥️ Старый ноутбук",      btc_per_hour: 0.010,  price: 50000,    emoji: "🖥️"},
+  2:  {name: "💻 Игровой ПК",           btc_per_hour: 0.050,  price: 63000,   emoji: "💻"},
+  3:  {name: "⚡ Разгонный ПК",         btc_per_hour: 0.100,  price: 67000,   emoji: "⚡"},
+  4:  {name: "🔧 ASIC Начальный",       btc_per_hour: 0.500,  price: 72000,   emoji: "🔧"},
+  5:  {name: "⛏️ ASIC Стандарт",        btc_per_hour: 1.000,  price: 80000,  emoji: "⛏️"},
+  6:  {name: "🏭 Мини-ферма",           btc_per_hour: 2.500,  price: 95000,  emoji: "🏭"},
+  7:  {name: "🔋 Ферма среднего класса",btc_per_hour: 5.000,  price: 150000, emoji: "🔋"},
+  8:  {name: "🚀 Продвинутая ферма",    btc_per_hour: 10.080,  price: 200000, emoji: "🚀"},
+  9:  {name: "💎 Мега-ферма",           btc_per_hour: 17.000,  price: 500000, emoji: "💎"},
+  10: {name: "👑 Бутуз-центр",           btc_per_hour: 25.000,  price: 1200000,emoji: "👑"},
 };
 
-const QUICK_BETS = [1000, 10000, 100000, 1000000, 10000000];
+const QUICK_BETS = [100, 1000, 10000, 100000, 1000000];
 
 const SLOT_SYMBOLS = ["🍒", "🍋", "🍊", "🍇", "💎", "7️⃣", "⭐", "🔔"];
 
@@ -63,7 +63,7 @@ export default function Casino() {
   const [activeTab, setActiveTab] = useState<'games' | 'farm' | 'bank' | 'biz' | 'shop' | 'top' | 'admin' | 'profile' | null>(null);
   const [hubView, setHubView] = useState<'economy' | 'games'>('economy');
 
-  const [bet, setBet] = useState(10000);
+  const [bet, setBet] = useState(1000);
   const [lastResult, setLastResult] = useState<any>(null);
   const [spinningSlots, setSpinningSlots] = useState(false);
   const [gameRolling, setGameRolling] = useState(false);
@@ -1415,8 +1415,8 @@ export default function Casino() {
     // sensible defaults for amount pickers
     const onHand = data.balance || 0;
     const inst = data.instant || 0;
-    setInstantDepAmt(Math.min(100000, Math.max(1000, Math.floor(onHand * 0.5))));
-    setInstantWdAmt(Math.min(100000, Math.max(1000, Math.floor(inst * 0.5))));
+    setInstantDepAmt(Math.min(10000, Math.max(100, Math.floor(onHand * 0.5))));
+    setInstantWdAmt(Math.min(10000, Math.max(100, Math.floor(inst * 0.5))));
     if (openingTierId) {
       const t = (data.tiers || []).find((x: any) => x.id === openingTierId);
       if (t) setOpenAmount(Math.min(t.max, Math.max(t.min, Math.floor(onHand * 0.3))));
@@ -1652,7 +1652,7 @@ export default function Casino() {
 
   // Transfer
   const [transferTo, setTransferTo] = useState('');
-  const [transferAmt, setTransferAmt] = useState(100000);
+  const [transferAmt, setTransferAmt] = useState(10000);
   async function doTransfer() {
     if (!token || !transferTo) return;
     try {
