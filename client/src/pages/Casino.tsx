@@ -2401,7 +2401,7 @@ export default function Casino() {
                           className={`group py-4 rounded-2xl border-2 flex flex-col items-center justify-center gap-1 active:scale-[0.985] transition ${coinSide === 'heads' ? 'border-yellow-400 ring-2 ring-yellow-400/30 scale-[1.01]' : 'border-white/20 hover:border-white/40'}`}
                           style={{ background: coinSide === 'heads' ? 'rgba(250,204,21,0.12)' : 'var(--game-sub-bg)' }}
                         >
-                          <div className="text-5xl">🪙</div>
+                          <div className="text-5xl">🦅</div>
                           <div className="font-bold text-xl tracking-tight">ОРЁЛ</div>
                           <div className="text-[10px] opacity-60 -mt-0.5">heads</div>
                         </button>
@@ -2411,7 +2411,7 @@ export default function Casino() {
                           className={`group py-4 rounded-2xl border-2 flex flex-col items-center justify-center gap-1 active:scale-[0.985] transition ${coinSide === 'tails' ? 'border-yellow-400 ring-2 ring-yellow-400/30 scale-[1.01]' : 'border-white/20 hover:border-white/40'}`}
                           style={{ background: coinSide === 'tails' ? 'rgba(250,204,21,0.12)' : 'var(--game-sub-bg)' }}
                         >
-                          <div className="text-5xl rotate-180">🪙</div>
+                          <div className="text-5xl">👑</div>
                           <div className="font-bold text-xl tracking-tight">РЕШКА</div>
                           <div className="text-[10px] opacity-60 -mt-0.5">tails</div>
                         </button>
@@ -2540,7 +2540,7 @@ export default function Casino() {
                               className={`py-3 rounded-2xl border-2 font-semibold active:scale-[0.985] ${coinSide === s ? 'border-yellow-400 ring-1 ring-yellow-400/40' : 'border-white/15'}`}
                               style={{ background: coinSide === s ? 'rgba(245,158,11,0.12)' : 'transparent' }}
                             >
-                              {s === 'heads' ? '🪙 ОРЁЛ' : '🪙 РЕШКА'}
+                              {s === 'heads' ? '🦅 ОРЁЛ' : '👑 РЕШКА'}
                             </button>
                           ))}
                         </div>
@@ -2668,7 +2668,7 @@ export default function Casino() {
                           <div className="font-semibold">{currentRoom.p1?.name || 'Вы'}</div>
                           {currentRoom.p1_choice || pvpMySide ? (
                             <div className="mt-1 inline-block px-3 py-0.5 rounded-full text-sm bg-yellow-400/20 text-yellow-300 font-medium">
-                              {((currentRoom.p1_choice || pvpMySide) === 'heads' ? '🪙 ОРЁЛ' : '🪙 РЕШКА')}
+                              {((currentRoom.p1_choice || pvpMySide) === 'heads' ? '🦅 ОРЁЛ' : '👑 РЕШКА')}
                             </div>
                           ) : (
                             <div className="text-xs text-amber-400 mt-1">Выберите сторону ниже</div>
@@ -2683,7 +2683,7 @@ export default function Casino() {
                               <div className="font-semibold">{currentRoom.p2.name}</div>
                               {currentRoom.p2_choice ? (
                                 <div className="mt-1 inline-block px-3 py-0.5 rounded-full text-sm bg-yellow-400/20 text-yellow-300 font-medium">
-                                  {currentRoom.p2_choice === 'heads' ? '🪙 ОРЁЛ' : '🪙 РЕШКА'}
+                                  {currentRoom.p2_choice === 'heads' ? '🦅 ОРЁЛ' : '👑 РЕШКА'}
                                 </div>
                               ) : (
                                 <div className="text-xs opacity-60 mt-1">Выбирает сторону…</div>
@@ -2739,7 +2739,7 @@ export default function Casino() {
                                 className="py-4 rounded-2xl border-2 font-bold active:scale-[0.985] disabled:opacity-50"
                                 style={{ borderColor: pvpMySide === s ? '#facc15' : 'rgba(255,255,255,0.15)' }}
                               >
-                                {s === 'heads' ? '🪙 ОРЁЛ' : '🪙 РЕШКА'}
+                                {s === 'heads' ? '🦅 ОРЁЛ' : '👑 РЕШКА'}
                               </button>
                             ))}
                           </div>
@@ -4502,38 +4502,38 @@ function CoinFlip({ isFlipping, finalFace, size = 'normal', onFlipComplete }: {
           <div className="absolute inset-[29%] rounded-full border border-[#c9a05a]/16" />
           <div className="absolute inset-[33%] rounded-full border border-[#c9a05a]/13" />
 
-          {/* Центральный крупный рельефный элемент решки — новый символ (не звезда) */}
-          {/* Большой выпуклый медальон */}
-          <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[31%] h-[31%] rounded-full"
+          {/* Центральный крупный рельефный элемент решки — ОТЛИЧНАЯ ОТ ОРЛА текстура */}
+          {/* Большой выпуклый медальон (larger for clear distinction) */}
+          <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[38%] h-[38%] rounded-full"
                style={{
                  background: 'radial-gradient(circle at 38% 32%, #d4af5a 0%, #b38a3a 48%, #6b4f1f 78%, #3a2a12 100%)',
                  boxShadow: `
-                   inset 0 0 0 1.8px #f4e8c8,
-                   0 2px 5px rgba(0,0,0,0.6),
-                   inset 0 7px 9px rgba(255,255,255,0.42),
-                   inset 0 -6px 8px rgba(0,0,0,0.5)
+                   inset 0 0 0 2.2px #f4e8c8,
+                   0 3px 7px rgba(0,0,0,0.65),
+                   inset 0 8px 11px rgba(255,255,255,0.5),
+                   inset 0 -7px 10px rgba(0,0,0,0.55)
                  `,
                }} />
 
           {/* Внутренний тёмный круг */}
-          <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[14%] h-[14%] rounded-full"
+          <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[17%] h-[17%] rounded-full"
                style={{
                  background: '#2a1f0e',
-                 boxShadow: 'inset 0 0 0 1.5px #d4af5a, 0 1px 3px rgba(0,0,0,0.7)',
+                 boxShadow: 'inset 0 0 0 2px #d4af5a, 0 1px 4px rgba(0,0,0,0.75)',
                }} />
 
-          {/* Новый центральный символ — стилизованная корона / лавровый венок (SVG) */}
-          <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[9%] h-[9%]"
+          {/* Новый центральный символ — крупная корона (гораздо больше и чётче, полностью отличается от орла) */}
+          <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[22%] h-[22%]"
                style={{ transform: 'translate(-50%, -50%)' }}>
             <svg width="100%" height="100%" viewBox="0 0 24 24" fill="none">
-              {/* Crown base */}
-              <rect x="3" y="15" width="18" height="4" rx="0.5" fill="#d4af5a"/>
-              {/* Crown points */}
-              <path d="M5 15 L5 8 L8 12 L12 5 L16 12 L19 8 L19 15" fill="#d4af5a" stroke="#f4e8c8" strokeWidth="1.2"/>
-              {/* Small jewels on points */}
-              <circle cx="8" cy="12" r="1.1" fill="#2a1f0e"/>
-              <circle cx="12" cy="5" r="1.1" fill="#2a1f0e"/>
-              <circle cx="16" cy="12" r="1.1" fill="#2a1f0e"/>
+              {/* Crown base - thicker */}
+              <rect x="2" y="16" width="20" height="5" rx="1" fill="#d4af5a"/>
+              {/* Crown points - bold */}
+              <path d="M4 16 L4 7 L8 13 L12 3 L16 13 L20 7 L20 16" fill="#d4af5a" stroke="#f4e8c8" strokeWidth="1.6"/>
+              {/* Larger jewels */}
+              <circle cx="8" cy="13" r="1.6" fill="#2a1f0e"/>
+              <circle cx="12" cy="3" r="1.6" fill="#2a1f0e"/>
+              <circle cx="16" cy="13" r="1.6" fill="#2a1f0e"/>
             </svg>
           </div>
 
