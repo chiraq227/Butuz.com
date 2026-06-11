@@ -1874,12 +1874,12 @@ export default function Casino() {
   };
 
   return (
-    <div className="w-full max-w-6xl mx-auto px-3 sm:px-4 py-5 sm:py-6 overflow-x-hidden">
+    <div className="w-full max-w-6xl mx-auto px-3 sm:px-4 pt-0 pb-5 sm:pb-6">
       <BalanceHeader />
 
       {/* Dedicated game views or hub — mobile safe */}
       {currentGame ? (
-        <div className="pb-8 w-full max-w-full overflow-x-hidden pt-3 pb-20">
+        <div className="pb-8 w-full max-w-full pt-3 pb-20">
           {currentGame && !['slots', 'mines', 'blackjack', 'dice', 'roulette', 'coin', 'plinko'].includes(currentGame) && (
             <div className="w-full max-w-md mx-auto text-center py-12">
               <div className="text-7xl mb-4">🚧</div>
@@ -3348,7 +3348,7 @@ export default function Casino() {
         </div>
       ) : (
         /* HUB */
-        <div className="w-full max-w-full overflow-x-hidden pt-16 pb-20">
+        <div className="w-full max-w-full pt-16 pb-20">
          {/* Top level tabs: Economy vs Games (games not always on screen) */}
           <div className="flex gap-2 mb-6 mt-2 sm:mt-4">
             <button
