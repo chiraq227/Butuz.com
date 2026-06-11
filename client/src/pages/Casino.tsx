@@ -27,16 +27,16 @@ const MIN_BET = 1;
 const TRANSFER_MIN = 1;
 
 const FARM_LEVELS_FRONT = {
-  1:  {name: "🖥️ Старый ноутбук",      btc_per_hour: 0.010,  price: 50000,    emoji: "🖥️"},
-  2:  {name: "💻 Игровой ПК",           btc_per_hour: 0.050,  price: 63000,   emoji: "💻"},
-  3:  {name: "⚡ Разгонный ПК",         btc_per_hour: 0.100,  price: 67000,   emoji: "⚡"},
-  4:  {name: "🔧 ASIC Начальный",       btc_per_hour: 0.500,  price: 72000,   emoji: "🔧"},
-  5:  {name: "⛏️ ASIC Стандарт",        btc_per_hour: 1.000,  price: 80000,  emoji: "⛏️"},
-  6:  {name: "🏭 Мини-ферма",           btc_per_hour: 2.500,  price: 95000,  emoji: "🏭"},
-  7:  {name: "🔋 Ферма среднего класса",btc_per_hour: 5.000,  price: 150000, emoji: "🔋"},
-  8:  {name: "🚀 Продвинутая ферма",    btc_per_hour: 10.080,  price: 200000, emoji: "🚀"},
-  9:  {name: "💎 Мега-ферма",           btc_per_hour: 17.000,  price: 500000, emoji: "💎"},
-  10: {name: "👑 Бутуз-центр",           btc_per_hour: 25.000,  price: 1200000,emoji: "👑"},
+  1:  {name: "🖥️ Старый ноутбук",      btc_per_hour: 0.004,  price: 50000,    emoji: "🖥️"},
+  2:  {name: "💻 Игровой ПК",           btc_per_hour: 0.020,  price: 63000,   emoji: "💻"},
+  3:  {name: "⚡ Разгонный ПК",         btc_per_hour: 0.040,  price: 67000,   emoji: "⚡"},
+  4:  {name: "🔧 ASIC Начальный",       btc_per_hour: 0.200,  price: 72000,   emoji: "🔧"},
+  5:  {name: "⛏️ ASIC Стандарт",        btc_per_hour: 0.400,  price: 80000,  emoji: "⛏️"},
+  6:  {name: "🏭 Мини-ферма",           btc_per_hour: 1.000,  price: 95000,  emoji: "🏭"},
+  7:  {name: "🔋 Ферма среднего класса",btc_per_hour: 2.000,  price: 150000, emoji: "🔋"},
+  8:  {name: "🚀 Продвинутая ферма",    btc_per_hour: 4.032,  price: 200000, emoji: "🚀"},
+  9:  {name: "💎 Мега-ферма",           btc_per_hour: 6.800,  price: 500000, emoji: "💎"},
+  10: {name: "👑 Бутуз-центр",           btc_per_hour: 10.000,  price: 1200000,emoji: "👑"},
 };
 
 const QUICK_BETS = [100, 1000, 10000, 100000, 1000000];
