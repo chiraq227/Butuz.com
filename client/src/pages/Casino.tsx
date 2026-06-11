@@ -4502,38 +4502,48 @@ function CoinFlip({ isFlipping, finalFace, size = 'normal', onFlipComplete }: {
           <div className="absolute inset-[29%] rounded-full border border-[#c9a05a]/16" />
           <div className="absolute inset-[33%] rounded-full border border-[#c9a05a]/13" />
 
-          {/* Центральный крупный рельефный элемент решки — ОТЛИЧНАЯ ОТ ОРЛА текстура */}
-          {/* Большой выпуклый медальон (larger for clear distinction) */}
-          <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[38%] h-[38%] rounded-full"
+          {/* Центральный крупный рельефный элемент решки — ПОЛНОСТЬЮ ДРУГАЯ ТЕКСТУРА (ключевая эмблема из референса) */}
+          {/* Большой выпуклый медальон под стиль этой монеты */}
+          <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[40%] h-[40%] rounded-full"
                style={{
                  background: 'radial-gradient(circle at 38% 32%, #d4af5a 0%, #b38a3a 48%, #6b4f1f 78%, #3a2a12 100%)',
                  boxShadow: `
-                   inset 0 0 0 2.2px #f4e8c8,
-                   0 3px 7px rgba(0,0,0,0.65),
-                   inset 0 8px 11px rgba(255,255,255,0.5),
-                   inset 0 -7px 10px rgba(0,0,0,0.55)
+                   inset 0 0 0 2.5px #f4e8c8,
+                   0 3px 8px rgba(0,0,0,0.7),
+                   inset 0 9px 12px rgba(255,255,255,0.55),
+                   inset 0 -8px 11px rgba(0,0,0,0.6)
                  `,
                }} />
 
           {/* Внутренний тёмный круг */}
-          <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[17%] h-[17%] rounded-full"
+          <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[18%] h-[18%] rounded-full"
                style={{
                  background: '#2a1f0e',
-                 boxShadow: 'inset 0 0 0 2px #d4af5a, 0 1px 4px rgba(0,0,0,0.75)',
+                 boxShadow: 'inset 0 0 0 2px #d4af5a, 0 1px 4px rgba(0,0,0,0.8)',
                }} />
 
-          {/* Новый центральный символ — крупная корона (гораздо больше и чётче, полностью отличается от орла) */}
-          <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[22%] h-[22%]"
+          {/* Центральная эмблема "РЕШКА" — точно по референсу (ключи/замок/фигурка) — полностью отличается от орла */}
+          <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[28%] h-[28%]"
                style={{ transform: 'translate(-50%, -50%)' }}>
-            <svg width="100%" height="100%" viewBox="0 0 24 24" fill="none">
-              {/* Crown base - thicker */}
-              <rect x="2" y="16" width="20" height="5" rx="1" fill="#d4af5a"/>
-              {/* Crown points - bold */}
-              <path d="M4 16 L4 7 L8 13 L12 3 L16 13 L20 7 L20 16" fill="#d4af5a" stroke="#f4e8c8" strokeWidth="1.6"/>
-              {/* Larger jewels */}
-              <circle cx="8" cy="13" r="1.6" fill="#2a1f0e"/>
-              <circle cx="12" cy="3" r="1.6" fill="#2a1f0e"/>
-              <circle cx="16" cy="13" r="1.6" fill="#2a1f0e"/>
+            <svg width="100%" height="100%" viewBox="0 0 100 100" fill="none" style={{ filter: 'drop-shadow(0 1px 3px rgba(0,0,0,0.6))' }}>
+              {/* Top left bow / key head */}
+              <path d="M22 28 Q12 18 24 10 Q36 18 30 28" fill="#d4af5a" stroke="#f4e8c8" strokeWidth="3"/>
+              {/* Top right bow / key head */}
+              <path d="M78 28 Q88 18 76 10 Q64 18 70 28" fill="#d4af5a" stroke="#f4e8c8" strokeWidth="3"/>
+              {/* Central vertical stem */}
+              <rect x="43" y="22" width="14" height="48" rx="3" fill="#d4af5a" stroke="#f4e8c8" strokeWidth="2"/>
+              {/* Central round lock / bead */}
+              <circle cx="50" cy="46" r="13" fill="#d4af5a" stroke="#f4e8c8" strokeWidth="2.5"/>
+              {/* Inner hole in the lock */}
+              <circle cx="50" cy="46" r="5" fill="#2a1a07" />
+              {/* Small inner highlight */}
+              <circle cx="50" cy="46" r="2" fill="#f4e8c8" opacity="0.6"/>
+              {/* Bottom left leg / tooth */}
+              <path d="M35 70 L28 82" stroke="#f4e8c8" strokeWidth="5" strokeLinecap="round"/>
+              {/* Bottom right leg / tooth */}
+              <path d="M65 70 L72 82" stroke="#f4e8c8" strokeWidth="5" strokeLinecap="round"/>
+              {/* Extra decorative center detail */}
+              <circle cx="50" cy="58" r="2.5" fill="#2a1a07" />
             </svg>
           </div>
 
